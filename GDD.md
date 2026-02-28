@@ -143,6 +143,26 @@ The vertical portion of an L/T match spawns a single special unit in that column
 
 ---
 
+## 6b. Square Matches — Wall Repair
+
+A 2x2 block of same-colored gems (a "square match") heals the player's own wall.
+
+### Mechanics
+- A pure square match (not connected to any horizontal or vertical 3+ run) heals the player's wall segment in each column covered by the square
+- Each column heals **10 HP** per square match
+- Wall HP is capped at the initial maximum (100 HP per segment)
+
+### Composite Matches
+- If a 2x2 block connects with a horizontal or vertical run (forming an L/T shape), the group is classified as that shape instead — no healing occurs, and the normal attack/unit spawning rules apply
+- Only pure, isolated square matches trigger the wall heal effect
+
+### Strategic Role
+- Square matches provide the only way to repair wall damage
+- This gives players a defensive option: set up 2x2 blocks to heal walls under pressure
+- Balances the offensive focus of vertical (attacks) and horizontal (units) matches
+
+---
+
 ## 7. Board Locking
 
 Locking is the primary way to pressure the enemy and progress toward a win.
@@ -254,15 +274,10 @@ Each of the 6 gem colors will produce a distinct attack type and unit variant:
 - **Green, Yellow, Purple, White:** TBD
 - Color-specific effects may include: AoE damage, slowing, piercing, splash, healing allies, etc.
 
-### Square Matches
-- Matching gems in a 2x2 or larger square pattern
-- Deferred — mechanics TBD
-
 ### Mobile Port
-- Phaser 3 supports touch input natively
-- Use Capacitor or similar wrapper for app store deployment
-- UI/UX adjustments for smaller screens and touch-only input
-- The scrollbar/minimap will need touch-friendly interaction
+- Basic mobile support implemented: tall 9:16 resolution (700x1136), touch-action CSS, swipe input for gem swapping
+- Future: Use Capacitor or similar wrapper for app store deployment
+- Further UX polish for touch-only input (larger tap targets, haptic feedback, etc.)
 
 ### Free Unit Movement
 - Currently units are column-locked and only move vertically

@@ -13,6 +13,16 @@ export enum GemColor {
   White = 5,
 }
 
+// Gem texture keys (maps GemColor → Phaser texture key / filename stem)
+export const GEM_TEXTURE_KEYS: Record<number, string> = {
+  [GemColor.Red]: 'gem_red',
+  [GemColor.Blue]: 'gem_blue',
+  [GemColor.Green]: 'gem_green',
+  [GemColor.Yellow]: 'gem_yellow',
+  [GemColor.Purple]: 'gem_purple',
+  [GemColor.White]: 'gem_white',
+};
+
 // Visual sizing
 export const CELL_SIZE = 64;
 export const BOARD_PIXEL_WIDTH = BOARD_COLS * CELL_SIZE;
@@ -33,19 +43,22 @@ export const BATTLEFIELD_Y = BOARD_PIXEL_HEIGHT;                           // 51
 export const PLAYER_BOARD_Y = BATTLEFIELD_Y + BATTLEFIELD_PIXEL_HEIGHT;    // 5632
 export const WORLD_HEIGHT = PLAYER_BOARD_Y + BOARD_PIXEL_HEIGHT;           // 6144
 
-// Game dimensions
-export const GAME_WIDTH = 800;
-export const GAME_HEIGHT = 900;
+// Game dimensions (mobile-friendly tall aspect ratio)
+export const GAME_WIDTH = 700;
+export const GAME_HEIGHT = 1136;
 
 // Minimap: full height on the right side
-export const MINIMAP_WIDTH = 80;
+export const MINIMAP_WIDTH = 120;
 export const MINIMAP_PADDING = 8;
 export const MINIMAP_X = GAME_WIDTH - MINIMAP_WIDTH;
 export const MINIMAP_Y = MINIMAP_PADDING;
 export const MINIMAP_HEIGHT = GAME_HEIGHT - MINIMAP_PADDING * 2;
 
 // Camera area: left of the minimap
-export const CAMERA_WIDTH = GAME_WIDTH - MINIMAP_WIDTH;                    // 740
+export const CAMERA_WIDTH = GAME_WIDTH - MINIMAP_WIDTH;                    // 580
+
+// Board horizontal centering in camera area
+export const BOARD_X = (CAMERA_WIDTH - BOARD_PIXEL_WIDTH) / 2;            // 34
 
 // Wall (must be before zoom calculation)
 export const WALL_SEGMENT_HP = 100;
@@ -53,15 +66,12 @@ export const WALL_DISPLAY_DIVISOR = 10; // display HP in increments of 10
 export const WALL_HEIGHT = 32;
 
 // Viewport split: board = bottom third, world = top two thirds
-export const BOARD_VIEW_HEIGHT = Math.floor(GAME_HEIGHT / 3);              // 300
-export const WORLD_VIEW_HEIGHT = GAME_HEIGHT - BOARD_VIEW_HEIGHT;          // 600
+export const BOARD_VIEW_HEIGHT = Math.floor(GAME_HEIGHT / 3);              // 378
+export const WORLD_VIEW_HEIGHT = GAME_HEIGHT - BOARD_VIEW_HEIGHT;          // 758
 
 // Board camera zoom to fit board + player wall into the board view
 export const BOARD_CAMERA_WORLD_HEIGHT = BOARD_PIXEL_HEIGHT + WALL_HEIGHT; // 544
-export const BOARD_CAMERA_ZOOM = BOARD_VIEW_HEIGHT / BOARD_CAMERA_WORLD_HEIGHT; // ~0.551
-
-// Board horizontal centering in world space
-export const BOARD_X = (GAME_WIDTH - BOARD_PIXEL_WIDTH) / 2;
+export const BOARD_CAMERA_ZOOM = BOARD_VIEW_HEIGHT / BOARD_CAMERA_WORLD_HEIGHT; // ~0.695
 
 // Enemy auto-play
 export const ENEMY_MOVE_INTERVAL_MIN = 1500;
@@ -97,6 +107,31 @@ export enum UnitType {
   Wizard = 'Wizard',
   Wizard2 = 'Wizard2',
 }
+
+// Unit spritesheet texture keys (maps UnitType → Phaser texture key / filename stem)
+export const UNIT_TEXTURE_KEYS: Record<UnitType, string> = {
+  [UnitType.BasicMelee]: 'unit_basic_melee',
+  [UnitType.Shield2]: 'unit_shield2',
+  [UnitType.Shield3]: 'unit_shield3',
+  [UnitType.Spearman]: 'unit_spearman',
+  [UnitType.Spearman2]: 'unit_spearman2',
+  [UnitType.Archer]: 'unit_archer',
+  [UnitType.Archer2]: 'unit_archer2',
+  [UnitType.Wizard]: 'unit_wizard',
+  [UnitType.Wizard2]: 'unit_wizard2',
+};
+
+// Spritesheet frame dimensions (48x80 sheet = 3 cols x 4 rows → 16x20 per frame)
+export const UNIT_FRAME_WIDTH = 16;
+export const UNIT_FRAME_HEIGHT = 20;
+
+// Walk animation: RPGMaker layout has 4 directions (rows: down, left, right, up) x 3 frames
+// For units marching up (player) or down (enemy), we use the appropriate row
+export const UNIT_ANIM_FRAMES_PER_DIR = 3;
+export const UNIT_ANIM_ROW_DOWN = 0;
+export const UNIT_ANIM_ROW_LEFT = 1;
+export const UNIT_ANIM_ROW_RIGHT = 2;
+export const UNIT_ANIM_ROW_UP = 3;
 
 export const UNIT_STRENGTH: Record<UnitType, number> = {
   [UnitType.BasicMelee]: 1,

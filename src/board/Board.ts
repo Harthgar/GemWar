@@ -98,18 +98,38 @@ export class Board {
   applyGravity(): Array<{ gem: Gem; fromRow: number; toRow: number }> {
     const moves: Array<{ gem: Gem; fromRow: number; toRow: number }> = [];
 
-    for (let c = 0; c < this.cols; c++) {
-      let writeRow = this.rows - 1;
-      for (let r = this.rows - 1; r >= 0; r--) {
-        const gem = this.grid[r][c];
-        if (gem !== null) {
-          if (r !== writeRow) {
-            moves.push({ gem, fromRow: r, toRow: writeRow });
-            this.grid[writeRow][c] = gem;
-            this.grid[r][c] = null;
-            gem.row = writeRow;
+    if (this.owner === 'enemy') {
+      // Enemy: gems fall "up" toward row 0 (front of the board)
+      for (let c = 0; c < this.cols; c++) {
+        let writeRow = 0;
+        for (let r = 0; r < this.rows; r++) {
+          const gem = this.grid[r][c];
+          if (gem !== null) {
+            if (r !== writeRow) {
+              moves.push({ gem, fromRow: r, toRow: writeRow });
+              this.grid[writeRow][c] = gem;
+              this.grid[r][c] = null;
+              gem.row = writeRow;
+            }
+            writeRow++;
           }
-          writeRow--;
+        }
+      }
+    } else {
+      // Player: gems fall down toward last row
+      for (let c = 0; c < this.cols; c++) {
+        let writeRow = this.rows - 1;
+        for (let r = this.rows - 1; r >= 0; r--) {
+          const gem = this.grid[r][c];
+          if (gem !== null) {
+            if (r !== writeRow) {
+              moves.push({ gem, fromRow: r, toRow: writeRow });
+              this.grid[writeRow][c] = gem;
+              this.grid[r][c] = null;
+              gem.row = writeRow;
+            }
+            writeRow--;
+          }
         }
       }
     }
@@ -126,16 +146,33 @@ export class Board {
           emptyCount++;
         }
       }
-      for (let i = 0; i < emptyCount; i++) {
-        const r = emptyCount - 1 - i;
-        const color = Math.floor(Math.random() * GEM_COLORS) as GemColor;
-        const gem = new Gem(color, r, c);
-        this.grid[r][c] = gem;
-        spawned.push({
-          gem,
-          targetRow: r,
-          spawnOffset: emptyCount - i,
-        });
+
+      if (this.owner === 'enemy') {
+        // Enemy: new gems enter from the bottom (battlefield-facing side)
+        for (let i = 0; i < emptyCount; i++) {
+          const r = this.rows - 1 - i;
+          const color = Math.floor(Math.random() * GEM_COLORS) as GemColor;
+          const gem = new Gem(color, r, c);
+          this.grid[r][c] = gem;
+          spawned.push({
+            gem,
+            targetRow: r,
+            spawnOffset: i + 1,
+          });
+        }
+      } else {
+        // Player: new gems enter from the top
+        for (let i = 0; i < emptyCount; i++) {
+          const r = emptyCount - 1 - i;
+          const color = Math.floor(Math.random() * GEM_COLORS) as GemColor;
+          const gem = new Gem(color, r, c);
+          this.grid[r][c] = gem;
+          spawned.push({
+            gem,
+            targetRow: r,
+            spawnOffset: emptyCount - i,
+          });
+        }
       }
     }
     return spawned;

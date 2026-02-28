@@ -153,22 +153,34 @@ export class BoardRenderer {
       const sprite = this.gemSprites.get(move.gem.id);
       if (sprite) {
         const target = this.gridToPixel(move.toRow, move.gem.col);
-        const duration = (move.toRow - move.fromRow) * FALL_DURATION_PER_CELL;
+        const duration = Math.abs(move.toRow - move.fromRow) * FALL_DURATION_PER_CELL;
         fallPromises.push(sprite.tweenTo(target.x, target.y, duration));
       }
     }
 
-    // 3. Create and animate new gems falling in from above
+    // 3. Create and animate new gems entering
+    const isEnemy = this.board.owner === 'enemy';
     for (const spawn of step.spawnedGems) {
-      const startY = -(spawn.spawnOffset * CELL_SIZE) + CELL_SIZE / 2;
       const targetPixel = this.gridToPixel(spawn.targetRow, spawn.gem.col);
+      let startY: number;
+      let duration: number;
+
+      if (isEnemy) {
+        // Enemy: new gems enter from below the board (battlefield-facing side)
+        startY = this.board.rows * CELL_SIZE + (spawn.spawnOffset * CELL_SIZE) - CELL_SIZE / 2;
+        duration = (spawn.spawnOffset + (this.board.rows - 1 - spawn.targetRow)) * FALL_DURATION_PER_CELL;
+      } else {
+        // Player: new gems fall in from above
+        startY = -(spawn.spawnOffset * CELL_SIZE) + CELL_SIZE / 2;
+        duration = (spawn.spawnOffset + spawn.targetRow) * FALL_DURATION_PER_CELL;
+      }
+
       const sprite = new GemSprite(this.scene, spawn.gem, {
         x: targetPixel.x,
         y: startY,
       });
       this.container.add(sprite.gameObject);
       this.gemSprites.set(spawn.gem.id, sprite);
-      const duration = (spawn.spawnOffset + spawn.targetRow) * FALL_DURATION_PER_CELL;
       fallPromises.push(sprite.tweenTo(targetPixel.x, targetPixel.y, duration));
     }
 

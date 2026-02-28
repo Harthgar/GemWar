@@ -345,14 +345,14 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createShuffleButton(): void {
-    const x = BOARD_X - 180;
+    const x = BOARD_X - 90;
     const y = PLAYER_BOARD_Y + BOARD_PIXEL_HEIGHT / 2;
 
-    const bg = this.add.rectangle(0, 0, 320, 120, 0x335577);
-    bg.setStrokeStyle(4, 0x6699bb);
+    const bg = this.add.rectangle(0, 0, 160, 120, 0x335577);
+    bg.setStrokeStyle(3, 0x6699bb);
 
     const label = this.add.text(0, 0, 'SHUFFLE', {
-      fontSize: '48px',
+      fontSize: '24px',
       color: '#ffffff',
       fontFamily: 'monospace',
       fontStyle: 'bold',
@@ -360,7 +360,7 @@ export class GameScene extends Phaser.Scene {
     label.setOrigin(0.5, 0.5);
 
     this.shuffleButton = this.add.container(x, y, [bg, label]);
-    this.shuffleButton.setSize(320, 120);
+    this.shuffleButton.setSize(160, 120);
     this.shuffleButton.setInteractive();
     this.shuffleButton.on('pointerdown', () => this.doPlayerShuffle());
     this.shuffleButton.setVisible(false);

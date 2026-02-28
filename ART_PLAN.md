@@ -155,7 +155,7 @@ A second faction would be a full new set of 9 unit types with different silhouet
 | **Battlefield BG** | Tiny Tales tilesets (owned) or asset pack | Layer Overworld + Dungeon tilesets you own for a war-torn field | $0-15 |
 | **Wall** | Part of tileset/environment pack | Often included in dungeon or castle tileset packs | $0 |
 | **Projectiles** | FX asset pack or code-driven | Pixel FX packs on itch.io often include projectiles, explosions, magic bolts | $0-15 |
-| **Combat FX** | EVFX packs (owned) + FX asset pack | Your EVFX Slash and Sanctuary packs + supplement with a dedicated pixel FX pack | $0-15 |
+| **Combat FX** | Pimen free packs + FX asset pack | EVFX packs are Effekseer format (not Phaser-compatible). Pimen free packs cover slashes, elemental spells, hit sparks. Supplement with paid Pimen Mega Pack if needed | $0-15 |
 | **UI** | Free UI pack | Kenney's UI packs (free, CC0) or paid pixel UI packs on itch.io | $0-15 |
 
 **Estimated total: $10-130**
@@ -226,8 +226,8 @@ A valid concern with popular asset packs: will players recognize them from other
 | **Rotating Gems for Match3** | [OpenGameArt](https://opengameart.org/content/rotating-gems-for-match3) | 7 colors, 40-frame rotation animation, 52x52px. Includes heart bomb + rainbow bomb variants | CC0 | EXCELLENT — animated, right size, more than 6 colors |
 | **Gem Match 3 Set** | [OpenGameArt](https://opengameart.org/content/gem-match-3-set) | 4 gem shapes x 6 colors (24 sprites). Vector + PNG | CC0 | GOOD — exactly 6 colors, but static (no animation) |
 | **Kenney Puzzle Pack 2** | [kenney.nl](https://www.kenney.nl/assets/puzzle-pack-2) | 795 assets: gems in 8 colors, diamonds, blocks, back tiles. Vector/flat style | CC0 | GOOD if going non-pixel — clean look but won't match pixel units |
-| **VisuStella Rocks, Ores, Minerals** *(owned)* | Humble Bundle | 1.9 GB — likely contains many mineral/gem sprites at RPGMaker icon size | Check license | MEDIUM-HIGH — inspect these first, may already solve the problem |
-| **VisuStella Jewelry Vol.01** *(owned)* | Humble Bundle | 381 MB of jewelry sprites | Check license | MEDIUM-HIGH — same as above |
+| **VisuStella Rocks, Ores, Minerals** *(owned)* | Humble Bundle | **INSPECTED:** 6,516 PNGs, 4 crystal shapes, 11 colors, 256px painted style. Built-in elemental overlays (fire/ice/plasma/etc). Scales down beautifully | Check license | **CONFIRMED EXCELLENT** — use this. See Section 4c for full details |
+| **VisuStella Jewelry Vol.01** *(owned)* | Humble Bundle | 381 MB of jewelry sprites. Not yet inspected — Minerals pack already covers gems well | Check license | LOW priority — Minerals pack is sufficient |
 
 **PAID:**
 
@@ -319,18 +319,19 @@ A valid concern with popular asset packs: will players recognize them from other
 
 These are complete "shopping lists" that balance coverage, cost, consistency, and your owned assets.
 
-#### Option 1: Maximize Owned Assets ($0-$5)
+#### Option 1: Maximize Owned Assets ($0) — CONFIRMED VIABLE
 | Category | Pack | Cost |
 |---|---|---|
-| Gems | VisuStella Rocks/Minerals or Jewelry *(owned)* — check first. Fallback: Rotating Gems (OpenGameArt, CC0) | $0 |
-| Units | Tiny Tales Mega Sprite Pack + Knights + Character Generator *(owned)* | $0 |
-| VFX | EVFX Slash + Sanctuary *(owned)* + Pimen free packs (supplement) | $0 |
+| Gems | **VisuStella Minerals** *(owned)* — CONFIRMED excellent. 11 colors, 4 shapes, built-in elemental overlays. 256px scales down perfectly | $0 |
+| Units | **Tiny Tales Mega Sprite Pack** *(owned)* — 9 races, 48px. Walk-only but VFX-sell combat works | $0 |
+| Elemental units | **Tiny Tales Elementals** *(owned)* — 18 creatures mapping to gem colors. Use for special/powerful units | $0 |
+| VFX | **Pimen free packs** (slashes, elemental spells, hit sparks) — EVFX Slash is NOT usable (Effekseer format) | $0 |
+| Tilesets | **Tiny Tales Overworld + Dungeon** *(owned)* — battlefield BG + wall segments | $0 |
 | UI | CraftPix Free Basic Pixel Art UI for RPG | $0 |
-| Gems fallback | Magic Gems (Coloritmic) if VisuStella doesn't work at match-3 scale | $5 |
-| **Total** | | **$0-5** |
+| **Total** | | **$0** |
 
-**Pros:** Zero/near-zero cost. Your Humble Bundle packs are from the RPGMaker ecosystem so they're unlikely to be recognized in a browser game. Good enough for prototype and possibly beyond.
-**Cons:** RPGMaker-style sprites may feel dated or have a specific "look." VisuStella gems may not work at small board scale. Need to audit all packs first.
+**Pros:** Completely free. VisuStella gems are genuinely high quality (painted crystals with glow). Elementals give us future color variants for free. Low recognition risk in browser games. Gems have built-in elemental overlays — fire/ice/etc versions already exist.
+**Cons:** Style mismatch between painted VisuStella gems and pixel Tiny Tales units — could work if "gems are magical/special" is the visual logic. Walk-cycle-only units need VFX to sell combat. Character Generator (Windows-only) untested.
 
 #### Option 2: Best Unit Roster Match ($25-$38)
 | Category | Pack | Cost |
@@ -359,42 +360,164 @@ These are complete "shopping lists" that balance coverage, cost, consistency, an
 **Pros:** Characters and fire VFX are guaranteed style-consistent (same artist). 4 OVERBURN color variants (orange, blue, green, purple) map to gem colors. Overboy has expansion packs (Megapack, Orcs) if you want more later.
 **Cons:** Missing wizard + spearman unit types. Fire-only from Overboy, need Pimen for other elements.
 
-#### Option 4: Free Prototype, Then Upgrade ($0 now, $25-38 later)
+#### Option 4: Free Prototype, Then Upgrade ($0 now, $25-38 later) — SELECTED
+
+**This is the chosen approach.**
+
 | Phase | What | Cost |
 |---|---|---|
-| **Now** | Tiny Tales units *(owned)* + Rotating Gems (CC0) + Pimen free VFX + CraftPix free UI | $0 |
-| **Later** | Pixel Heroes Animated + Magic Gems (replace prototype art) | $25 |
+| **Now** | **VisuStella Minerals** for gems (confirmed excellent) + **Tiny Tales Mega Sprite Pack** for units + **Tiny Tales Elementals** for special/elemental units + **Tiny Tales tilesets** for battlefield/walls + **Pimen free VFX** + CraftPix free UI | $0 |
+| **Later** | Pixel Heroes Animated (if walk-only units aren't enough) + Magic Gems (if pixel-style gems preferred over VisuStella painted style) | $25 |
 | **Optional** | Pimen Mega Pack VFX | $13 |
 | **Total** | | **$0 → $25-38** |
 
-**Pros:** No money spent until the game is playable and you know what you actually need. Owned Tiny Tales assets are low-recognition in browser games. Upgrade path is clear.
-**Cons:** Two art swaps (prototype → final) means integration work twice.
+**Pros:** No money spent until the game is playable. Owned assets are stronger than expected — VisuStella gems are high quality with built-in elemental variants, and Elementals give us color-coded units for free. Low recognition risk. May not even need the "Later" purchases if the owned assets look good in-game.
+**Cons:** Painted gems vs pixel units style gap (likely fine). Walk-only units need VFX for combat. Two art swaps if we do upgrade later.
 
-**Overall recommendation: Option 4.** Start with your owned assets (zero cost, low recognition risk), get the game playable, then upgrade to Pixel Heroes + Magic Gems once you've confirmed the game is worth investing in.
+**Overall recommendation: Option 4 confirmed.** The asset inspection validated that owned packs are even better than initially expected. The VisuStella minerals with built-in elemental overlays and the Tiny Tales Elementals mapping to gem colors are both wins we didn't anticipate.
 
-### 4c. Your Humble Bundle Assets
+### 4c. Your Humble Bundle Assets — Inspection Results
 
-**Most useful for GemWar:**
+We've downloaded and inspected the most promising packs. Here's what we found:
 
-| Pack | Use Case | Fit |
+#### VisuStella Rocks, Ores, and Minerals — EXCELLENT for Gems
+
+**Verdict: Best gem art option. Already owned. Use this.**
+
+- **6,516 PNGs** across 4 mineral shapes (Mineral01_01 through Mineral01_04)
+- **11 colors:** Red, Blue, Green, Gold, Violet, Orange, Pink, Black, White, Silver, Brown (we need 6, so we pick the best)
+- **Multiple base variants per color:** Base, Sparkling, Cracked, Dirt, Light, Stonebits (~15 combos)
+- **Built-in elemental overlays:** fire, ice, plasma, earth, light, dark, water, wind — applied ON the crystals. This is exactly what we planned for future elemental gem variants, and it's already done
+- **Individual sprites:** 256x256px painted/illustrated style (not pixel art). Scales down well to 48-64px board size
+- **Small atlas:** 288x352px. **Large atlas:** 2304x2816px
+- **Style:** High-quality painted crystals with glow effects. Not pixel art, but could work alongside pixel units if we lean into "gems are special/magical" as a visual distinction
+
+**Gem color mapping (recommended):**
+| Gem Color | VisuStella Color | Mineral Shape | Notes |
+|---|---|---|---|
+| Red | Red | Mineral01_01 | Fiery crystal cluster |
+| Blue | Blue | Mineral01_03 | Tall angular crystals |
+| Green | Green | Mineral01_02 | Pick best shape |
+| Yellow | Gold | Mineral01_04 | Upright cluster |
+| Purple | Violet | Mineral01_04 | Sparkling variant |
+| White | White or Silver | Mineral01_01 | Light base variant |
+
+**Elemental variants (future):** Already built into the pack — each color has fire, ice, plasma, earth, light, dark, water, wind overlays. When we add gem-color-specific attacks, we can swap to the elemental overlay versions with zero additional art cost.
+
+#### EVFX Slash — NOT Directly Usable
+
+**Verdict: Skip for now. Use Pimen free packs instead.**
+
+- VFX stored in `.efkefc` format (Effekseer particle engine for RPGMaker MZ)
+- **Not a standard sprite sheet** — requires either the Effekseer runtime or conversion to extract usable frames
+- The PNG files included are mostly RPGMaker demo project assets, not the actual slash effects
+- 71 OGG sound files are potentially useful as combat SFX, though
+- Would require significant conversion work to use in Phaser. Pimen's free VFX packs are a much easier path
+
+#### Tiny Tales 2D Character Generator — Requires Windows
+
+**Verdict: Park this. Try later if you have access to a Windows machine or VM.**
+
+- Windows-only Unity .exe application
+- Exports custom sprite sheets to an "Exported" folder
+- Could potentially create custom unit combinations (armor, weapons, colors)
+- License allows free and commercial use, modification, but no redistribution of the tool itself
+- **Not usable on Mac without a VM**
+
+#### Tiny Tales Mega Sprite Pack — Good Prototype Units (Walk Only)
+
+**Verdict: Solid for prototype. Walk-cycle-only limitation manageable with VFX overlays.**
+
+- **3,300 PNGs** across 9 character races: Cat, DarkElf, Fennec, Horned, Human, Mouse, Orc, Squirrel, Vampire
+- **48x80px** sprite sheets — RPGMaker-style walk cycles (4 directions x 3 frames = 12 frames per sheet)
+- Original folder has individual sprites; RPG Maker folder has 32px and 48px formatted versions
+- **Walk cycles only — no attack or death animations.** This is the key limitation
+- Clean, consistent pixel art style across all races
+
+**Prototype unit mapping:**
+| GemWar Unit | Mega Sprite Character | Notes |
 |---|---|---|
-| **Tiny Tales: Mega Sprite Pack** | Unit sprites (walk cycles, varied characters) | HIGH — great for prototype units |
-| **Tiny Tales: Human NPC Knights Sprite Pack** | Shield units, melee units | HIGH |
-| **Tiny Tales: Human NPC Advanced Sprite Pack** | More unit variety | HIGH |
-| **Tiny Tales Overworld Tileset Pack** | Battlefield background | MEDIUM |
-| **Tiny Tales Dungeon Tileset Pack** | Board frame / background | MEDIUM |
-| **Tiny Tales: 2D Character Generator** | Generate custom unit sprites | HIGH — could create all unit types |
-| **Tiny Tales 2D Battler Packs (Vol 1-5)** | Battle portraits, enemy art | LOW (battler-style, not overworld) |
-| **EVFX Slash** | Melee combat effects | MEDIUM — check if scale works |
-| **EVFX Sanctuary** | Magic/healing effects | MEDIUM |
-| **EasySTAR Animations - Astrology** | Magic attack FX? | LOW — probably too specific |
-| **VisuStella Atelier: Rocks, Ores, and Minerals** | Gem sprites! | MEDIUM-HIGH — check if style/size works for match-3 gems |
-| **VisuStella Armory: Jewelry Vol.01** | Alternative gem sprites | MEDIUM-HIGH |
-| **Tyler Warren RPG Battlers Pixel Style** | Unit sprites (battler format) | LOW — battler style, not overworld |
-| **Cursed Kingdoms / Valor and Villainy Music** | Background music | HIGH |
-| **Cute Game Sounds / Beast Sounds** | SFX | MEDIUM |
+| Basic melee | Human warrior variants | Sword-carrying characters |
+| Shield Lv2/Lv3 | Orc or Horned variants | Bulkier characters suggest defense |
+| Spearman Lv1/Lv2 | DarkElf variants | Taller, leaner look |
+| Archer Lv1/Lv2 | Fennec or Cat variants | Smaller, agile look |
+| Wizard Lv1/Lv2 | Vampire or robed Human | Magic-user aesthetic |
 
-**Top recommendation:** Download and inspect the **Tiny Tales: 2D Character Generator** first. If it lets you create custom sprite sheets for different unit types (melee, archer, mage, spear), it could single-handedly solve your unit art problem for the prototype. Also check the **VisuStella Rocks/Ores/Minerals** and **Jewelry** packs for gem sprites.
+#### Tiny Tales Elemental NPC — Standout for Elemental Units
+
+**Verdict: Excellent find. These map directly to gem color elements.**
+
+- **18 elemental creatures** — 9 elements with base + Prime (upgraded) variant each
+- **Elements:** Fire, Ice, Storm, Water, Wind, Earth, Dark, Light, Nature
+- **96x160px** sprite sheets (larger than humanoid sprites — 2x scale, good for "special" units)
+- Same walk cycle format (4 directions x 3 frames), no attack anims
+
+**Gem color → Elemental mapping:**
+| Gem Color | Elemental | Prime Variant Use |
+|---|---|---|
+| Red | Fire | Fire Prime = upgraded red units |
+| Blue | Ice | Ice Prime = upgraded blue units |
+| Green | Nature | Nature Prime = upgraded green units |
+| Yellow | Storm | Storm Prime = upgraded yellow units |
+| Purple | Dark | Dark Prime = upgraded purple units |
+| White | Light | Light Prime = upgraded white units |
+
+**Use case options:**
+1. **Elemental unit variants** — When gem colors gain identity, swap humanoid units for elementals of that color
+2. **Special units from L/T matches** — Elementals could represent the more powerful spearman/archer/wizard spawns (their larger sprite size reinforces their power)
+3. **"Summoned creature" overlay** — Elementals march alongside humanoid units as magical companions
+
+#### Tiny Tales Magitek Dynasty NPC — Supplemental
+
+**Verdict: Nice to have. Good for faction variety later.**
+
+- 19 human characters across Dynasty, Empire, Noble faction variants
+- Same 48x80px walk cycle format
+- Could serve as a second faction set if we want human vs human visual distinction
+- Less immediately useful than Mega Sprite Pack or Elementals
+
+#### Tiny Tales Tilesets (Overworld + Dungeon)
+
+**Verdict: Useful for battlefield and board backgrounds.**
+
+- **Overworld (149 PNGs):** Hills, Desert, Snow, Towns, Villages, Exteriors, Interiors
+- **Dungeon (176 PNGs):** Fortress, CityWalls, Mines, TechFortress
+- Tiled-compatible format with sample .tmx maps
+- 256x256px tileset images
+
+**GemWar uses:**
+| Tileset | Use | Notes |
+|---|---|---|
+| Overworld Hills | Battlefield background | Green grass/hills tiling vertically. Natural "warzone" feel |
+| Dungeon Fortress | Wall segments, board frame | Stone walls and fortification tiles. Could build wall segments from these |
+| Dungeon CityWalls | Alternative wall art | Defensive wall assets |
+| Overworld Snow/Desert | Future battlefield themes | Alternate visual themes if we add maps |
+
+#### Tyrian Remastered Graphics — Not Useful
+- 47 sci-fi ship sprite sheets. Wrong genre entirely. Skip.
+
+#### The Walk-Cycle-Only Problem & Solutions
+
+The biggest limitation across all Tiny Tales packs is **walk cycles only — no attack or death animations**. For GemWar's combat units, here are the options ranked by effort:
+
+1. **VFX-sell combat (recommended for prototype):** Units walk, and when they fight, overlay slash/hit/explosion VFX from Pimen packs + screen flash + damage numbers. Many successful games do this. The "combat" is sold by the effects, not unit animation
+2. **Use Elementals for combat units:** A fire elemental "attacking" reads fine with just a particle burst — no swing animation needed. Reserve humanoids for marching, elementals for fighting
+3. **Frame-hack attacks:** Take the side-facing walk frame and overlay weapon-swing VFX. Cheap but can look okay
+4. **Character Generator (Windows):** If it supports attack frames, this solves everything. Need Windows to test
+5. **Commission attack frames later:** Match the Tiny Tales style. 9 units x 1 attack anim each = small focused commission
+
+#### Other Owned Packs (Not Yet Inspected)
+
+| Pack | Expected Use | Priority to Inspect |
+|---|---|---|
+| **VisuStella Armory: Jewelry Vol.01** | Alternative gem sprites (jewelry style) | LOW — Minerals pack already covers gems well |
+| **EVFX Sanctuary** | Magic/healing VFX | LOW — same Effekseer format issue as EVFX Slash |
+| **Tiny Tales: Human NPC Knights** | More knight/warrior unit sprites | MEDIUM — could add shield/melee variety |
+| **Tiny Tales: Human NPC Advanced** | More unit variety | MEDIUM |
+| **Tiny Tales: Beastmen, Orcs, Dark Elves** | Additional race variants | LOW — Mega Sprite Pack already has 9 races |
+| **Tyler Warren RPG Battlers Pixel Style** | Battler-format sprites | LOW — wrong perspective for overworld units |
+| **Cursed Kingdoms / Valor and Villainy Music** | Background music | HIGH — inspect when ready for audio |
+| **Cute Game Sounds / Beast Sounds** | SFX | MEDIUM |
 
 ### 4d. Contract Artist (Targeted Gap-Filling)
 
@@ -422,14 +545,17 @@ Commissioning custom art makes the most sense for specific gaps that asset packs
 
 ## 5. Recommended Approach
 
-### Right Now (Week 1-2): Zero-Cost Prototype Art
-1. **Gems:** Colored geometric shapes (code-drawn circles/diamonds with distinct silhouettes)
-2. **Units:** Pull from Tiny Tales Mega Sprite Pack + Knights pack. Map unit types to existing characters
-3. **Battlefield:** Tiny Tales Overworld tileset, tiled vertically
-4. **Wall:** Simple stone block sprite from Tiny Tales Dungeon tileset
-5. **FX:** Phaser particle emitters (code-only, no sprites needed)
-6. **UI:** Minimal — text + colored rectangles
-7. **Elemental colors:** Not yet — all units are generic. Plan the overlay/tint system in code so it's ready when art arrives
+### Right Now (Week 1-2): Zero-Cost Prototype Art (Concrete Plan)
+1. **Gems:** VisuStella Minerals — pick 6 colors (Red, Blue, Green, Gold, Violet, White), use Base_Sparkling variants, downscale from 256px to ~48-64px. Use individual PNGs not atlases
+2. **Units:** Tiny Tales Mega Sprite Pack — Human warriors for melee, Orcs for shields, DarkElf for spearmen, Fennec for archers, Vampire for wizards. 48px sprites, walk cycle only
+3. **Special units (L/T matches):** Tiny Tales Elementals — Fire=red, Ice=blue, Nature=green, Storm=yellow, Dark=purple, Light=white. Their larger size (96px) naturally communicates "more powerful"
+4. **Battlefield:** Tiny Tales Overworld Hills tileset, tiled vertically
+5. **Wall:** Tiny Tales Dungeon Fortress tileset — stone wall segments
+6. **FX:** Pimen free packs (slashes, hit sparks, elemental spells) + Phaser particle emitters
+7. **Projectiles:** Code-driven colored shapes with particle trails for now. Pimen elemental spells can upgrade this later
+8. **UI:** Minimal — CraftPix free RPG UI for health bars, code-drawn for the rest
+9. **Elemental gem variants:** Already available in VisuStella (fire/ice/plasma overlays on crystals). Not needed yet but zero-cost when ready
+10. **Combat selling:** Walk → stop → overlay Pimen slash/hit VFX → damage numbers → unit disappears. No attack animation needed
 
 ### Month 1-2: Audit Owned Assets + Browse Packs
 1. Download and audit your Humble Bundle packs — especially Tiny Tales Character Generator, VisuStella Rocks/Minerals, VisuStella Jewelry
