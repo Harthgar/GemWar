@@ -203,73 +203,174 @@ A second faction would be a full new set of 9 unit types with different silhouet
 
 **Verdict:** Use AI for concepting and for assets where consistency across a set doesn't matter (backgrounds, gem icons, portraits). Don't rely on it for unit sprites that need to feel cohesive.
 
-### 4b. Asset Packs (Primary Strategy)
+### 4b. Asset Packs — Specific Recommendations
 
-Asset packs are the sweet spot for GemWar: professional quality art at a fraction of commission cost, available immediately, and often from artists who specialize in game-ready sprites. The key challenge is finding packs that are internally consistent and cover enough of your needs.
+Asset packs are the primary strategy for GemWar art. Below are concrete packs found through research, organized by category. Remember: you already own Tiny Tales, VisuStella, EVFX, and Tyler Warren packs from Humble Bundle — those are noted where relevant.
 
-**Where to shop:**
+#### Recognizability Risk
 
-| Marketplace | Strengths | Price Range | License Notes |
-|---|---|---|---|
-| **itch.io** | Largest selection, many free packs, active community. Best for pixel art | Free - $30 per pack | Varies per pack — always check. Most paid packs allow commercial use |
-| **Craftpix.net** | Curated, high quality. Good search/filtering. Many complete "sets" | Free - $30 per pack, bundles $15-50 | Commercial license included with paid packs |
-| **GameDevMarket.net** | Curated marketplace, RPG-heavy catalog | $5-40 per pack | Commercial license included |
-| **Kenney.nl** | Excellent quality, all CC0 (no attribution needed). More vector/modern style | Free | CC0 — use for anything, no restrictions |
-| **OpenGameArt.org** | Large free library. Quality varies widely | Free | Mixed licenses — check each asset |
+A valid concern with popular asset packs: will players recognize them from other games?
 
-**What to search for (by GemWar category):**
+- **High-recognition packs:** Kenney assets, Tiny Swords (Pixel Frog), and LuizMelo character packs are *extremely* widely used. Indie devs who frequent itch.io or game jams will likely recognize them. General players probably won't
+- **Medium-recognition:** Pimen VFX, CraftPix freebies — common in indie games but less instantly identifiable since VFX and UI are less distinctive than character art
+- **Low-recognition:** Paid niche packs ($5-20 range with fewer downloads), your Humble Bundle RPGMaker packs (designed for a different engine ecosystem, rarely seen in browser/Phaser games), and less popular itch.io creators
+- **Mitigation:** Palette swaps, tinting, combining elements from multiple packs, and adding custom overlays (like elemental effects) all make stock assets feel more "yours." The more you layer and modify, the less recognizable the base assets become
+- **Bottom line:** For a prototype/early release, recognizability is not a real problem. For a polished commercial release, the units and gems matter most — those are what players associate with your game's identity. VFX, UI, and tilesets are rarely recognized
 
-**Gems / Match-3:**
-- Search: "gems sprites", "jewels pixel art", "match 3 assets", "crystals game assets"
-- What you need: 6+ distinct gem designs at 32-64px, ideally with animation frames
-- Many match-3 asset packs exist because it's a popular genre — you may find complete kits with gems + board + FX
+#### Gems / Match-3 Sprites
 
-**Units (most important pack purchase):**
-- Search: "pixel RPG characters", "fantasy warriors sprite sheet", "medieval unit sprites", "RTS pixel units"
-- What you need: warrior, shield, spearman, archer, wizard archetypes — each with idle/walk/attack/death
-- **Key tip:** Look for packs from a single artist that cover multiple unit types. A "medieval army pack" or "fantasy troops pack" is ideal. Avoid mixing unit packs from different artists
-- Good sign: the pack page shows a sprite sheet with multiple character types in the same pixel scale and style
+**FREE:**
 
-**FX / Projectiles:**
-- Search: "pixel VFX", "pixel art effects", "magic spells pixel", "projectile sprites"
-- These packs are often very comprehensive (50-100+ effects) and cheap ($5-15)
-- Look for packs that include: projectiles, impacts, elemental effects (fire/ice/lightning), hit sparks
+| Pack | Source | Details | License | GemWar Fit |
+|---|---|---|---|---|
+| **Rotating Gems for Match3** | [OpenGameArt](https://opengameart.org/content/rotating-gems-for-match3) | 7 colors, 40-frame rotation animation, 52x52px. Includes heart bomb + rainbow bomb variants | CC0 | EXCELLENT — animated, right size, more than 6 colors |
+| **Gem Match 3 Set** | [OpenGameArt](https://opengameart.org/content/gem-match-3-set) | 4 gem shapes x 6 colors (24 sprites). Vector + PNG | CC0 | GOOD — exactly 6 colors, but static (no animation) |
+| **Kenney Puzzle Pack 2** | [kenney.nl](https://www.kenney.nl/assets/puzzle-pack-2) | 795 assets: gems in 8 colors, diamonds, blocks, back tiles. Vector/flat style | CC0 | GOOD if going non-pixel — clean look but won't match pixel units |
+| **VisuStella Rocks, Ores, Minerals** *(owned)* | Humble Bundle | 1.9 GB — likely contains many mineral/gem sprites at RPGMaker icon size | Check license | MEDIUM-HIGH — inspect these first, may already solve the problem |
+| **VisuStella Jewelry Vol.01** *(owned)* | Humble Bundle | 381 MB of jewelry sprites | Check license | MEDIUM-HIGH — same as above |
 
-**UI:**
-- Search: "pixel UI kit", "RPG interface", "game UI pixel art"
-- Kenney's free UI packs are hard to beat, but they're not pixel-art style
-- For pixel style: many $5-15 packs on itch.io include buttons, frames, health bars, panels
+**PAID:**
 
-**Tilesets / Backgrounds:**
-- You likely already have this covered with your Tiny Tales packs
-- If not: search "pixel tileset fantasy", "battlefield background pixel"
+| Pack | Source | Price | Details | GemWar Fit |
+|---|---|---|---|---|
+| **Magic Gems Pixel Art Asset** (Coloritmic) | [itch.io](https://coloritmic.itch.io/magic-gems-asset) / [GameDevMarket](https://www.gamedevmarket.net/asset/magic-gems-pixel-art-asset) | ~$5 | 17 gem types x 3 forms (sphere, square, brilliant). Animated. Aseprite source files included. ~32px pixel art | EXCELLENT — massive variety, animated, source files for customization. Low recognition risk (niche creator) |
+| **Shiny Gems Pack** (Frakassets) | [itch.io](https://frakassets.itch.io/shiny-gems-pack-1) | ~$3 | 9 animated gems with shimmer/sparkle | GOOD — affordable supplement |
+| **Match 3 Game Gems** | [GameDevMarket](https://www.gamedevmarket.net/asset/match-3-game-gems) | ~$5-10 | 78 gem types at 64x64px. 2D art (not pixel) | GOOD for variety — pick best 6 from 78 options |
 
-**Buying strategy:**
-1. **Prioritize single-artist coverage.** If one artist sells a unit pack, a gem pack, AND a UI pack, buy all three. Consistent style across categories is worth a small premium
-2. **Check the artist's full catalog.** Many itch.io artists have a "fantasy" line with matching characters, tilesets, and UI. Buying within one line guarantees visual cohesion
-3. **Buy the unit pack first.** Units are the hardest to find in the right style/coverage. Once you've committed to a unit pack's art style, match everything else to it
-4. **Free packs for prototyping, paid packs for polish.** Don't buy until you know what style direction you want. Use free packs to test what "feels right" in-game first
-5. **License audit.** Before committing, verify every pack allows commercial use. Most paid packs do, but free packs vary
+**Recommendation:** Check your VisuStella packs first (free to you). If they don't work at match-3 scale, the **Rotating Gems** (free, CC0, animated) are the best free option. **Magic Gems** ($5) is the best paid option — low recognition risk, Aseprite sources let you customize.
 
-**Artists/lines worth investigating on itch.io:**
-_(These are starting points — browse their full catalogs to see if they cover multiple categories)_
-- Search for artists who produce "medieval" or "fantasy" pixel art with multiple packs in the same style
-- Look at the "Top Sellers" and "Most Popular" sections under Game Assets > Sprites on itch.io
-- Many prolific pixel artists (like Szadi Art, Sanctum Pixel, Cainos, etc.) have extensive catalogs where units, tilesets, and UI all match
+#### Unit Sprites (Most Important Category)
 
-**The consistency problem:**
-The biggest risk with asset packs is mixing styles. Mitigate this by:
-- Buying from as few artists as possible (ideally 1-2)
-- Ensuring pixel scale matches across packs (e.g., all 32x32 or all 48x48 characters)
-- Using color grading / palette reduction in code to unify disparate packs (Phaser tint or a shader)
-- Accepting that "close enough" is fine for a prototype — players are more forgiving than you think
+**FREE:**
 
-### 4b-ii. Free Assets (supplementary)
+| Pack | Source | Details | License | GemWar Fit |
+|---|---|---|---|---|
+| **Tiny Swords** (Pixel Frog) | [itch.io](https://pixelfrog-assets.itch.io/tiny-swords) | Warrior, Lancer, Archer, Monk. **5 faction colors** (blue/red/purple/yellow/black). Includes terrain, buildings, UI, particle FX. 64x64 grid. Idle/Run/Attack anims | Free commercial use | EXCELLENT roster match but **very widely recognized** in indie games. Top-down perspective (not side-view). Enemy Pack ($15) adds 16 more unit types |
+| **CraftPix Tiny Hero Series** | [craftpix.net](https://craftpix.net/freebies/free-tiny-pixel-hero-sprites-with-melee-attacks/) | Multiple free packs: Melee Heroes, Bow Heroes, Assassin/Mage/Viking. 32px, walk/run/attack/die anims | Royalty-free commercial | GOOD — 32px is a nice small scale. Consistent across the series. Less recognized than Tiny Swords |
+| **CraftPix Knight Sprites** | [craftpix.net](https://craftpix.net/freebies/free-knight-character-sprites-pixel-art/) | 3 knight color variants, 12 sprite sheets with Defend/Protect/Attack/Death | Royalty-free commercial | MODERATE — good for shield units specifically |
+| **LuizMelo Character Packs** | [itch.io](https://luizmelo.itch.io/) | Multiple CC0 packs: Medieval Warrior, Wizard, Evil Wizard, Martial Hero, etc. High-quality pixel art, 13 anim states. ~231x190px (large) | CC0 | GOOD quality but very large sprites need heavy downscaling. One character per pack. **Widely used** in platformers |
+| **Tiny Tales packs** *(owned)* | Humble Bundle | Mega Sprite Pack, Human NPC Knights, Human NPC Advanced, 2D Character Generator, Beastmen, Orcs, Dark Elves, etc. | Check license | HIGH for prototype — these are RPGMaker-style top-down sprites. The 2D Character Generator could create custom unit combinations. **Low recognition in browser games** (RPGMaker ecosystem, not typically seen in Phaser/HTML5 games) |
 
-Free assets are still valuable for filling gaps where you don't want to spend money:
-- **Kenney.nl** — Best free game assets on the internet. CC0 license. Strong for UI, weaker for pixel RPG characters
-- **OpenGameArt.org** — Hit or miss quality. Good for placeholder and SFX
-- **Freesound.org** — Excellent for SFX (not visual art)
+**PAID:**
+
+| Pack | Source | Price | Details | GemWar Fit |
+|---|---|---|---|---|
+| **Pixel Heroes Animated** | [GameDevMarket](https://www.gamedevmarket.net/asset/pixel-heroes-animated) | $20 | **10 characters:** Archer, Dark Wizard, Fire Wizard, White Wizard, Knight, Spearman, Viking, Thief, Pirate, Naked. **Plus 8 monsters.** 40x32px side-view. **11 anim states** (idle, walk, run, attack x2, block, death, etc.) | EXCELLENT — best roster match for GemWar. Knight=warrior, Viking=shield, Spearman, Archer, 3 Wizard variants. Moderate recognition |
+| **RPG Heroes & Enemies** (Overboy) | [itch.io](https://overboy.itch.io/character-pack-02) | ~$14 | 15 characters: 5 archers, 5 heavy warriors, 5 light fighters across Human/Orc/Troll/Demon factions. Idle/Move/Attack/Hit/Dead | GOOD — faction variety is interesting. Missing wizard + spearman. **Same artist as OVERBURN FX** = style consistency |
+| **Overboy CHARACTER MEGAPACK** | [itch.io](https://overboy.itch.io/character-megapack) | ~$35 | 50+ animated characters | GOOD if budget stretches — widest variety from one consistent artist |
+
+**Recommendation for units:** Your **Tiny Tales packs** (already owned) are the best starting point for prototype — they're from the RPGMaker ecosystem so very few Phaser/browser games use them, meaning low recognition. For polished art, **Pixel Heroes Animated** ($20) has the best direct roster match to GemWar's unit types. If you want same-artist VFX, the **Overboy** ecosystem (characters + OVERBURN FX) is worth considering despite the gaps.
+
+#### VFX / Projectiles / Spell Effects
+
+**FREE:**
+
+| Pack | Source | Details | License | GemWar Fit |
+|---|---|---|---|---|
+| **Pimen VFX Collection** (15+ free packs) | [itch.io](https://pimen.itch.io/) | Slashes & Thrusts (20 slashes + 5 thrusts, 48x48), Hit Sparks, Ice/Fire/Thunder/Water/Earth/Wind/Dark/Holy spell effects, Smoke & Dust, Cutting & Healing. All consistent pixel art style | Commercial use allowed | EXCELLENT — this one creator's free packs alone cover nearly every VFX GemWar needs. Elemental types map to gem colors. Moderately recognized but VFX are rarely a recognition issue |
+| **Pixel Art Spells — Dungeon Delve** | [OpenGameArt](https://opengameart.org/content/pixel-art-spells) | 16x16 animated projectiles: fireball, ice bolt, arcane ray, lightning, shadow, etc. **Black-and-white base designed to be tinted in-engine** | CC0 | EXCELLENT for projectiles — the tint-in-engine approach is perfect for GemWar's 6 gem colors from one set of sprites |
+| **CodeManu Free VFX Packs** | [itch.io](https://codemanu.itch.io/pixelart-effect-pack) + [VFX pack](https://codemanu.itch.io/vfx-free-pack) | 42 total effects across 2 packs: explosions, fireballs, energy bursts. 100x100px | CC-BY 4.0 | GOOD — larger scale, good for explosions and impacts |
+| **EVFX Slash + EVFX Sanctuary** *(owned)* | Humble Bundle | Slash effects and magic/sanctuary effects. RPGMaker format sprite sheets | Check license | MEDIUM — check if the scale and format work for Phaser. May need sprite sheet splitting |
+
+**PAID:**
+
+| Pack | Source | Price | Details | GemWar Fit |
+|---|---|---|---|---|
+| **Pimen Mega Pack Elemental Spell Effects 01** | [itch.io](https://pimen.itch.io/mega-pack-elemental-spell-effects) | ~$13 | 50+ spell animations: Thunder, Fire, Water, Earth, Wind | EXCELLENT — same style as free Pimen packs but much more content. Covers 5 elements |
+| **Pimen Mega Pack Spell Effects 02** | [itch.io](https://pimen.itch.io/mega-pack-elemental-spell-effects-02) | ~$21 | 50 more: Ice, Holy, Dark, Acid, Wood | EXCELLENT complement to Pack 01 |
+| **OVERBURN FX** (Overboy) | [itch.io](https://overboy.itch.io/overburn-pixel-art-fire-fx-effects) | ~$16 | 120 fire effects, 3000+ frames, **4 color variants** (orange, blue, green, purple). PSD source. 2 bonus characters | STRONG for fire specifically. 4 colors map to gem types. **Same artist as Overboy character packs** |
+| **Super Pixel Fantasy FX** (unTied Games) | [itch.io](https://untiedgames.itch.io/) | $5-7 each | Modular: Fantasy FX, Projectiles, Impacts, Explosions as separate packs. Multiple color themes per pack | GOOD — buy exactly what you need. Consistent across the series |
+
+**Recommendation for VFX:** **Pimen's free packs** are the clear winner — they cover almost every element and are consistently styled. Supplement with the Dungeon Delve projectiles (free, tintable). If you want more volume, the **Pimen Mega Pack** ($13) is the best single purchase. Check your **EVFX packs** first since you own them.
+
+#### UI Kits
+
+**FREE:**
+
+| Pack | Source | Details | License | GemWar Fit |
+|---|---|---|---|---|
+| **CraftPix Basic Pixel Art UI for RPG** | [craftpix.net](https://craftpix.net/freebies/free-basic-pixel-art-ui-for-rpg/) | Windows (settings, shop, victory/defeat), buttons, **health/mana/XP bars**, quick slot bar, icons. PSD + PNG | Royalty-free commercial | EXCELLENT — the health bars and HUD elements are directly useful. PSD files are editable |
+| **Kenney UI Pack + RPG Expansion** | [kenney.nl](https://kenney.nl/assets/ui-pack) | 430+ buttons/panels/sliders + 85 RPG elements + 130 adventure elements. Vector/flat style | CC0 | EXCELLENT quality but non-pixel style. Could work as a deliberate "clean UI" design choice alongside pixel game art |
+| **Tiny Swords UI** (if using Tiny Swords) | Included in [Tiny Swords](https://pixelfrog-assets.itch.io/tiny-swords) | Banners, ribbons, buttons, health bars, icons | Free commercial | EXCELLENT if you commit to the Tiny Swords aesthetic |
+
+**PAID:**
+
+| Pack | Source | Price | Details | GemWar Fit |
+|---|---|---|---|---|
+| **CraftPix Game UI Pixel Art** | [craftpix.net](https://craftpix.net/product/game-ui-pixel-art/) | ~$6 | 10 window types, 64 icons (24x24), buttons, loading screen. PSD + PNG | GOOD — more menu-focused than HUD. Complements the free CraftPix RPG UI |
+
+**Recommendation:** The **CraftPix free RPG UI** is the best starting point — it has health bars, which is what you need most. Supplement with Kenney if you want more polished buttons/panels.
+
+#### Recognizability Summary by Pack
+
+| Pack | Recognition Risk | Why |
+|---|---|---|
+| Tiny Swords (Pixel Frog) | **HIGH** | One of the most popular free game asset packs. Used in countless jam games and tutorials |
+| LuizMelo packs | **HIGH** | Extremely popular CC0 packs, seen in many platformers |
+| Kenney assets | **HIGH** | The most-used free game assets on the internet |
+| Pimen VFX | **MEDIUM** | Popular but VFX is less identifiable than characters |
+| CraftPix freebies | **MEDIUM** | Common in indie games |
+| Pixel Heroes Animated | **LOW-MEDIUM** | Paid pack, fewer users |
+| Magic Gems (Coloritmic) | **LOW** | Niche paid pack |
+| Overboy packs | **LOW-MEDIUM** | Paid, smaller audience |
+| Your Tiny Tales / VisuStella *(owned)* | **LOW in browser games** | RPGMaker ecosystem — almost never seen in Phaser/HTML5 games. Very common in RPGMaker games specifically |
+
+### 4b-ii. Recommended Combinations
+
+These are complete "shopping lists" that balance coverage, cost, consistency, and your owned assets.
+
+#### Option 1: Maximize Owned Assets ($0-$5)
+| Category | Pack | Cost |
+|---|---|---|
+| Gems | VisuStella Rocks/Minerals or Jewelry *(owned)* — check first. Fallback: Rotating Gems (OpenGameArt, CC0) | $0 |
+| Units | Tiny Tales Mega Sprite Pack + Knights + Character Generator *(owned)* | $0 |
+| VFX | EVFX Slash + Sanctuary *(owned)* + Pimen free packs (supplement) | $0 |
+| UI | CraftPix Free Basic Pixel Art UI for RPG | $0 |
+| Gems fallback | Magic Gems (Coloritmic) if VisuStella doesn't work at match-3 scale | $5 |
+| **Total** | | **$0-5** |
+
+**Pros:** Zero/near-zero cost. Your Humble Bundle packs are from the RPGMaker ecosystem so they're unlikely to be recognized in a browser game. Good enough for prototype and possibly beyond.
+**Cons:** RPGMaker-style sprites may feel dated or have a specific "look." VisuStella gems may not work at small board scale. Need to audit all packs first.
+
+#### Option 2: Best Unit Roster Match ($25-$38)
+| Category | Pack | Cost |
+|---|---|---|
+| Gems | Magic Gems Pixel Art (Coloritmic) | $5 |
+| Units | Pixel Heroes Animated (GameDevMarket) — Knight, Viking, Spearman, Archer, 3 Wizards, 8 monsters | $20 |
+| VFX | Pimen free packs (slashes, elemental spells, hit sparks) | $0 |
+| VFX upgrade | Pimen Mega Pack Elemental Spell Effects 01 (optional) | $13 |
+| UI | CraftPix Free Basic Pixel Art UI for RPG | $0 |
+| Tilesets | Tiny Tales Overworld + Dungeon *(owned)* | $0 |
+| **Total** | | **$25-38** |
+
+**Pros:** Pixel Heroes has the closest match to GemWar's 9 unit types (warrior, shield, spear, archer, 3 wizard tiers). 11 animation states per character is generous. Side-view perspective. Low recognition risk. Pimen VFX is well-proven.
+**Cons:** Units and gems are from different artists (may need color grading to unify). 40x32px units are small.
+
+#### Option 3: Same-Artist Characters + VFX ($24-$35)
+| Category | Pack | Cost |
+|---|---|---|
+| Gems | Magic Gems Pixel Art (Coloritmic) | $5 |
+| Units | RPG Heroes & Enemies (Overboy) — 15 characters across factions | $14 |
+| VFX | OVERBURN FX (Overboy) — 120 fire effects, 4 colors — **same artist as units** | $16 |
+| VFX supplement | Pimen free packs (for non-fire elements: ice, thunder, water) | $0 |
+| UI | CraftPix Free Basic Pixel Art UI for RPG | $0 |
+| **Total** | | **$35** |
+
+**Pros:** Characters and fire VFX are guaranteed style-consistent (same artist). 4 OVERBURN color variants (orange, blue, green, purple) map to gem colors. Overboy has expansion packs (Megapack, Orcs) if you want more later.
+**Cons:** Missing wizard + spearman unit types. Fire-only from Overboy, need Pimen for other elements.
+
+#### Option 4: Free Prototype, Then Upgrade ($0 now, $25-38 later)
+| Phase | What | Cost |
+|---|---|---|
+| **Now** | Tiny Tales units *(owned)* + Rotating Gems (CC0) + Pimen free VFX + CraftPix free UI | $0 |
+| **Later** | Pixel Heroes Animated + Magic Gems (replace prototype art) | $25 |
+| **Optional** | Pimen Mega Pack VFX | $13 |
+| **Total** | | **$0 → $25-38** |
+
+**Pros:** No money spent until the game is playable and you know what you actually need. Owned Tiny Tales assets are low-recognition in browser games. Upgrade path is clear.
+**Cons:** Two art swaps (prototype → final) means integration work twice.
+
+**Overall recommendation: Option 4.** Start with your owned assets (zero cost, low recognition risk), get the game playable, then upgrade to Pixel Heroes + Magic Gems once you've confirmed the game is worth investing in.
 
 ### 4c. Your Humble Bundle Assets
 

@@ -9,13 +9,17 @@ import { AttackManager } from '../attack/AttackManager';
 import { Wall } from '../wall/Wall';
 import { WallRenderer } from '../wall/WallRenderer';
 import { EventBus, GameEvents } from '../util/EventBus';
-import { MatchGroup } from '../board/MatchDetector';
+import { MatchGroup, MatchGroupType } from '../board/MatchDetector';
+import { UnitManager } from '../unit/UnitManager';
 import {
   BOARD_X, BOARD_COLS, CELL_SIZE,
+  BOARD_PIXEL_HEIGHT,
   ENEMY_BOARD_Y, PLAYER_BOARD_Y, BATTLEFIELD_Y,
   ENEMY_MOVE_INTERVAL_MIN, ENEMY_MOVE_INTERVAL_MAX,
   MINIMAP_X, MINIMAP_Y, MINIMAP_WIDTH, MINIMAP_HEIGHT,
-  WALL_HEIGHT, attackPower,
+  WALL_HEIGHT, attackPower, SHUFFLE_IDLE_MS,
+  horizontalMatchUnitType, horizontalMatchRowCount,
+  specialUnitType, UNIT_ROW_STAGGER,
 } from '../game/constants';
 
 export class GameScene extends Phaser.Scene {
@@ -31,10 +35,17 @@ export class GameScene extends Phaser.Scene {
   private enemyMoveTimer = 0;
   private gameOver = false;
 
+  // Shuffle system
+  private playerIdleTimer = 0;
+  private enemyIdleTimer = 0;
+  private shuffleButton!: Phaser.GameObjects.Container;
+  private shuffleVisible = false;
+
   // Systems
   private viewport!: ViewportManager;
   private minimap!: Minimap;
   private attackManager!: AttackManager;
+  private unitManager!: UnitManager;
   private playerWall!: Wall;
   private enemyWall!: Wall;
   private playerWallRenderer!: WallRenderer;
@@ -81,6 +92,12 @@ export class GameScene extends Phaser.Scene {
       this, this.playerWall, this.enemyWall, this.playerBoard, this.enemyBoard
     );
 
+    // Unit system
+    this.unitManager = new UnitManager(
+      this, this.playerWall, this.enemyWall, this.playerBoard, this.enemyBoard
+    );
+    this.attackManager.setUnitManager(this.unitManager);
+
     // Gem locking: update board renderer when a gem is locked
     EventBus.on(GameEvents.GEM_LOCKED, (data: { boardOwner: string; gemId: number }) => {
       const renderer = data.boardOwner === 'player'
@@ -94,14 +111,52 @@ export class GameScene extends Phaser.Scene {
     });
 
     EventBus.on(GameEvents.MATCH_RESOLVED, (data: { owner: string; group: MatchGroup }) => {
-      if (data.group.verticalColumn !== null) {
-        const power = attackPower(data.group.verticalLength);
-        this.attackManager.fireAttack(
-          data.owner as 'player' | 'enemy',
-          data.group.verticalColumn,
-          power,
-          data.group.color
-        );
+      // Reset idle timers on successful match
+      if (data.owner === 'player') {
+        this.playerIdleTimer = 0;
+        this.hideShuffleButton();
+      } else {
+        this.enemyIdleTimer = 0;
+      }
+
+      const owner = data.owner as 'player' | 'enemy';
+      const group = data.group;
+
+      // Vertical component: pure vertical → attack, L/T → special unit (not attack)
+      if (group.verticalColumn !== null) {
+        if (group.type === MatchGroupType.LShape || group.type === MatchGroupType.TShape) {
+          const special = specialUnitType(group.verticalLength);
+          this.unitManager.spawnUnit(owner, group.verticalColumn, special, group.color);
+        } else {
+          const power = attackPower(group.verticalLength);
+          this.attackManager.fireAttack(owner, group.verticalColumn, power, group.color);
+        }
+      }
+
+      // Horizontal matches spawn regular units
+      if (group.horizontalColumns.length > 0 && group.horizontalLength >= 3) {
+        const unitType = horizontalMatchUnitType(group.horizontalLength);
+        const rowCount = horizontalMatchRowCount(group.horizontalLength);
+        for (let row = 0; row < rowCount; row++) {
+          const stagger = row * UNIT_ROW_STAGGER;
+          for (const col of group.horizontalColumns) {
+            this.unitManager.spawnUnit(owner, col, unitType, group.color, stagger);
+          }
+        }
+      }
+
+      // Square matches heal own wall
+      if (group.squareColumns.length > 0) {
+        const wall = owner === 'player' ? this.playerWall : this.enemyWall;
+        const renderer = owner === 'player'
+          ? this.playerWallRenderer : this.enemyWallRenderer;
+        for (const col of group.squareColumns) {
+          wall.heal(col, 1);
+          renderer.updateSegment(col);
+          console.log(
+            `[${owner}] Square healed wall col=${col} HP=${wall.segments[col]}`
+          );
+        }
       }
     });
 
@@ -129,6 +184,9 @@ export class GameScene extends Phaser.Scene {
       }
     });
 
+    // Shuffle button (world space, left of player board)
+    this.createShuffleButton();
+
     // Keyboard: Space to snap back to board view
     this.input.keyboard?.on('keydown-SPACE', () => {
       this.viewport.snapToDefault();
@@ -148,8 +206,25 @@ export class GameScene extends Phaser.Scene {
       this.scheduleEnemyMove();
     }
 
-    // Advance attacks
+    // Player idle timer (only counts when not processing)
+    if (!this.playerSwapHandler.isProcessing) {
+      this.playerIdleTimer += delta;
+    }
+    if (this.playerIdleTimer >= SHUFFLE_IDLE_MS && !this.shuffleVisible) {
+      this.showShuffleButton();
+    }
+
+    // Enemy idle timer
+    if (!this.enemySwapHandler.isProcessing) {
+      this.enemyIdleTimer += delta;
+    }
+    if (this.enemyIdleTimer >= SHUFFLE_IDLE_MS) {
+      this.doEnemyShuffle();
+    }
+
+    // Advance attacks and units
     this.attackManager.update(delta);
+    this.unitManager.update(delta);
 
     // Update minimap
     this.minimap.update();
@@ -215,6 +290,52 @@ export class GameScene extends Phaser.Scene {
     subtext.setOrigin(0.5, 0.5);
     subtext.setScrollFactor(0);
     subtext.setDepth(1000);
+  }
+
+  private createShuffleButton(): void {
+    const x = BOARD_X - 180;
+    const y = PLAYER_BOARD_Y + BOARD_PIXEL_HEIGHT / 2;
+
+    const bg = this.add.rectangle(0, 0, 320, 120, 0x335577);
+    bg.setStrokeStyle(4, 0x6699bb);
+
+    const label = this.add.text(0, 0, 'SHUFFLE', {
+      fontSize: '48px',
+      color: '#ffffff',
+      fontFamily: 'monospace',
+      fontStyle: 'bold',
+    });
+    label.setOrigin(0.5, 0.5);
+
+    this.shuffleButton = this.add.container(x, y, [bg, label]);
+    this.shuffleButton.setSize(320, 120);
+    this.shuffleButton.setInteractive();
+    this.shuffleButton.on('pointerdown', () => this.doPlayerShuffle());
+    this.shuffleButton.setVisible(false);
+  }
+
+  private showShuffleButton(): void {
+    this.shuffleVisible = true;
+    this.shuffleButton.setVisible(true);
+  }
+
+  private hideShuffleButton(): void {
+    this.shuffleVisible = false;
+    this.shuffleButton.setVisible(false);
+  }
+
+  private doPlayerShuffle(): void {
+    this.playerBoard.shuffle();
+    this.playerRenderer.refreshColors();
+    this.playerIdleTimer = 0;
+    this.hideShuffleButton();
+  }
+
+  private doEnemyShuffle(): void {
+    this.enemyBoard.shuffle();
+    this.enemyRenderer.refreshColors();
+    this.enemyIdleTimer = 0;
+    console.log('[enemy] Auto-shuffled board');
   }
 
   private makeEnemyMove(): void {

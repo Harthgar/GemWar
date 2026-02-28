@@ -48,6 +48,7 @@ export class WallRenderer {
       visual.rect.setAlpha(WALL_DESTROYED_ALPHA);
       visual.hpText.setText('');
     } else {
+      visual.rect.setAlpha(1);
       visual.hpText.setText(`${hp}`);
     }
   }

@@ -47,12 +47,17 @@ export const MINIMAP_HEIGHT = GAME_HEIGHT - MINIMAP_PADDING * 2;
 // Camera area: left of the minimap
 export const CAMERA_WIDTH = GAME_WIDTH - MINIMAP_WIDTH;                    // 740
 
+// Wall (must be before zoom calculation)
+export const WALL_SEGMENT_HP = 10;
+export const WALL_HEIGHT = 32;
+
 // Viewport split: board = bottom third, world = top two thirds
 export const BOARD_VIEW_HEIGHT = Math.floor(GAME_HEIGHT / 3);              // 300
 export const WORLD_VIEW_HEIGHT = GAME_HEIGHT - BOARD_VIEW_HEIGHT;          // 600
 
-// Board camera zoom to fit 512px board into 300px view height
-export const BOARD_CAMERA_ZOOM = BOARD_VIEW_HEIGHT / BOARD_PIXEL_HEIGHT;   // ~0.586
+// Board camera zoom to fit board + player wall into the board view
+export const BOARD_CAMERA_WORLD_HEIGHT = BOARD_PIXEL_HEIGHT + WALL_HEIGHT; // 544
+export const BOARD_CAMERA_ZOOM = BOARD_VIEW_HEIGHT / BOARD_CAMERA_WORLD_HEIGHT; // ~0.551
 
 // Board horizontal centering in world space
 export const BOARD_X = (GAME_WIDTH - BOARD_PIXEL_WIDTH) / 2;
@@ -70,6 +75,59 @@ export function attackPower(matchLength: number): number {
 export const ATTACK_TRAVEL_MS = 1500;
 export const ATTACK_SPEED = BATTLEFIELD_PIXEL_HEIGHT / ATTACK_TRAVEL_MS; // world px per ms
 
-// Wall
-export const WALL_SEGMENT_HP = 10;
-export const WALL_HEIGHT = 32;
+// Shuffle
+export const SHUFFLE_IDLE_MS = 10000;
+
+// Units
+export const UNIT_TRAVEL_MS = 45000;
+export const UNIT_SPEED = BATTLEFIELD_PIXEL_HEIGHT / UNIT_TRAVEL_MS; // ~0.114 px/ms
+export const UNIT_ROW_STAGGER = CELL_SIZE; // 64px spacing between formation rows
+export const UNIT_ATTACK_INTERVAL = 1000; // ms between attacks
+export const UNIT_HP_MULTIPLIER = 3; // HP = strength * this
+
+export enum UnitType {
+  BasicMelee = 'BasicMelee',
+  Shield2 = 'Shield2',
+  Shield3 = 'Shield3',
+  Spearman = 'Spearman',
+  Spearman2 = 'Spearman2',
+  Archer = 'Archer',
+  Archer2 = 'Archer2',
+  Wizard = 'Wizard',
+  Wizard2 = 'Wizard2',
+}
+
+export const UNIT_STRENGTH: Record<UnitType, number> = {
+  [UnitType.BasicMelee]: 1,
+  [UnitType.Shield2]: 2,
+  [UnitType.Shield3]: 4,
+  [UnitType.Spearman]: 4,
+  [UnitType.Spearman2]: 8,
+  [UnitType.Archer]: 16,
+  [UnitType.Archer2]: 32,
+  [UnitType.Wizard]: 64,
+  [UnitType.Wizard2]: 128,
+};
+
+export function horizontalMatchUnitType(matchLength: number): UnitType {
+  if (matchLength <= 3) return UnitType.BasicMelee;
+  if (matchLength === 4) return UnitType.Shield2;
+  return UnitType.Shield3;
+}
+
+export function horizontalMatchRowCount(matchLength: number): number {
+  if (matchLength <= 5) return 1;
+  if (matchLength === 6) return 2;
+  if (matchLength === 7) return 4;
+  return 8;
+}
+
+export function specialUnitType(verticalLength: number): UnitType {
+  if (verticalLength <= 3) return UnitType.Spearman;
+  if (verticalLength === 4) return UnitType.Spearman2;
+  if (verticalLength === 5) return UnitType.Archer;
+  if (verticalLength === 6) return UnitType.Archer2;
+  if (verticalLength === 7) return UnitType.Wizard;
+  return UnitType.Wizard2;
+}
+

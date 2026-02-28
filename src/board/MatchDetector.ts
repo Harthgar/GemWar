@@ -4,7 +4,7 @@ import { GridPos, posKey } from '../util/GridPosition';
 /** A contiguous run of matching gems in one direction */
 export interface MatchRun {
   positions: GridPos[];
-  direction: 'horizontal' | 'vertical';
+  direction: 'horizontal' | 'vertical' | 'square';
   color: number;
 }
 
@@ -14,6 +14,7 @@ export enum MatchGroupType {
   Vertical,    // Pure vertical — fires attack
   LShape,      // L-shape — horizontal spawns units, vertical spawns special unit
   TShape,      // T-shape — same effect as L, classified separately for future use
+  Square,      // 2x2 block — heals own wall
 }
 
 /** A group of connected match runs that share cells */
@@ -27,6 +28,7 @@ export interface MatchGroup {
   verticalLength: number;      // Length of longest vertical run (0 if none)
   horizontalColumns: number[]; // Columns covered by horizontal runs (for unit spawning)
   verticalColumn: number | null; // Column of vertical run (for attack/special unit)
+  squareColumns: number[];     // Columns covered by square runs (for wall healing)
 }
 
 export class MatchDetector {
@@ -94,6 +96,28 @@ export class MatchDetector {
       }
     }
 
+    // 2x2 square blocks
+    for (let r = 0; r < board.rows - 1; r++) {
+      for (let c = 0; c < board.cols - 1; c++) {
+        const tl = board.gemAt(r, c);
+        const tr = board.gemAt(r, c + 1);
+        const bl = board.gemAt(r + 1, c);
+        const br = board.gemAt(r + 1, c + 1);
+        if (tl && tr && bl && br &&
+            !tl.locked && !tr.locked && !bl.locked && !br.locked &&
+            tl.color === tr.color && tl.color === bl.color && tl.color === br.color) {
+          runs.push({
+            positions: [
+              { row: r, col: c }, { row: r, col: c + 1 },
+              { row: r + 1, col: c }, { row: r + 1, col: c + 1 },
+            ],
+            direction: 'square',
+            color: tl.color,
+          });
+        }
+      }
+    }
+
     return runs;
   }
 
@@ -147,6 +171,7 @@ export class MatchDetector {
   private static classifyGroup(runs: MatchRun[]): MatchGroup {
     const horizontalRuns = runs.filter(r => r.direction === 'horizontal');
     const verticalRuns = runs.filter(r => r.direction === 'vertical');
+    const squareRuns = runs.filter(r => r.direction === 'square');
 
     // Collect all unique positions
     const posSet = new Set<string>();
@@ -163,7 +188,10 @@ export class MatchDetector {
 
     // Determine type
     let type: MatchGroupType;
-    if (verticalRuns.length === 0) {
+    if (horizontalRuns.length === 0 && verticalRuns.length === 0) {
+      // Square-only group (no H/V runs)
+      type = MatchGroupType.Square;
+    } else if (verticalRuns.length === 0) {
       type = MatchGroupType.Horizontal;
     } else if (horizontalRuns.length === 0) {
       type = MatchGroupType.Vertical;
@@ -192,6 +220,15 @@ export class MatchDetector {
       verticalColumn = verticalRuns[0].positions[0].col;
     }
 
+    // Square columns: unique columns covered by any square run
+    const sqColSet = new Set<number>();
+    for (const run of squareRuns) {
+      for (const pos of run.positions) {
+        sqColSet.add(pos.col);
+      }
+    }
+    const squareColumns = Array.from(sqColSet).sort((a, b) => a - b);
+
     const color = runs[0].color;
 
     return {
@@ -204,6 +241,7 @@ export class MatchDetector {
       verticalLength,
       horizontalColumns,
       verticalColumn,
+      squareColumns,
     };
   }
 

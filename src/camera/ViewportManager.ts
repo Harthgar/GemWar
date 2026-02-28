@@ -6,6 +6,7 @@ import {
   BOARD_PIXEL_WIDTH, BOARD_PIXEL_HEIGHT,
   BOARD_X, PLAYER_BOARD_Y,
   MINIMAP_X, MINIMAP_WIDTH,
+  WALL_HEIGHT,
 } from '../game/constants';
 
 /**
@@ -33,7 +34,8 @@ export class ViewportManager {
   constructor(scene: Phaser.Scene) {
     const zoom = BOARD_CAMERA_ZOOM;
     const boardCenterX = BOARD_X + BOARD_PIXEL_WIDTH / 2;
-    const boardCenterY = PLAYER_BOARD_Y + BOARD_PIXEL_HEIGHT / 2;
+    // Board camera shows player wall + board: center on the midpoint of that region
+    const boardCenterY = PLAYER_BOARD_Y - WALL_HEIGHT + (BOARD_PIXEL_HEIGHT + WALL_HEIGHT) / 2;
 
     // Phaser's scrollY is NOT a pure world coordinate. It relates to the view by:
     //   midPoint = scrollY + (viewportHeight / 2)     [screen pixels]
@@ -43,11 +45,12 @@ export class ViewportManager {
     // So: viewTop = scrollY + halfViewH - halfDisplayH
     //     viewBot = scrollY + halfViewH + halfDisplayH
     const halfViewH = WORLD_VIEW_HEIGHT / 2;              // 300 (screen px)
-    const halfDisplayH = (WORLD_VIEW_HEIGHT / zoom) / 2;  // 512 (world px)
+    const halfDisplayH = (WORLD_VIEW_HEIGHT / zoom) / 2;  // ~544 (world px)
 
-    // Default: viewBot = PLAYER_BOARD_Y  →  scrollY = PLAYER_BOARD_Y - halfViewH - halfDisplayH
-    // Minimum: viewTop = 0 (enemy board)  →  scrollY = halfDisplayH - halfViewH
-    this.defaultScrollY = PLAYER_BOARD_Y - halfViewH - halfDisplayH;
+    // Board camera top edge = PLAYER_BOARD_Y - WALL_HEIGHT (wall top)
+    // Default: world camera bottom = wall top →  scrollY = (PLAYER_BOARD_Y - WALL_HEIGHT) - halfViewH - halfDisplayH
+    // Minimum: viewTop = 0 (enemy board)      →  scrollY = halfDisplayH - halfViewH
+    this.defaultScrollY = (PLAYER_BOARD_Y - WALL_HEIGHT) - halfViewH - halfDisplayH;
     this.minScrollY = halfDisplayH - halfViewH;
 
     // --- Board camera first (bottom third, fixed on player board) ---
@@ -68,10 +71,10 @@ export class ViewportManager {
     this.worldCamera.setScroll(this.cameraScrollX, this.defaultScrollY);
 
     // Enforce vertical scroll bounds at the engine level.
-    // X bounds are very wide to avoid constraining horizontal centering.
+    // World camera range ends at the wall top (board camera handles wall + board).
     this.worldCamera.setBounds(
       -99999, 0,
-      199998, PLAYER_BOARD_Y
+      199998, PLAYER_BOARD_Y - WALL_HEIGHT
     );
 
     // --- UI camera (right strip for minimap, no zoom, no scroll) ---
@@ -83,7 +86,7 @@ export class ViewportManager {
 
     // --- Separator line (visible when scrolled away from default) ---
     this.separator = scene.add.rectangle(
-      boardCenterX, PLAYER_BOARD_Y,
+      boardCenterX, PLAYER_BOARD_Y - WALL_HEIGHT,
       BOARD_PIXEL_WIDTH + 200, 4, 0x666688
     );
     this.separator.setDepth(1000);

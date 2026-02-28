@@ -121,6 +121,14 @@ export class BoardRenderer {
     if (sprite) sprite.setLocked(locked);
   }
 
+  /** Update all gem sprite colors to match the board data (used after shuffle) */
+  refreshColors(): void {
+    this.board.forEachGem((gem) => {
+      const sprite = this.gemSprites.get(gem.id);
+      if (sprite) sprite.setColor(gem.color);
+    });
+  }
+
   /** Animate one step of the cascade resolution */
   async animateResolveStep(step: ResolveStep): Promise<void> {
     // 0. Update unlocked gem visuals (before match removal animation)

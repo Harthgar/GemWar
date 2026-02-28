@@ -4,7 +4,8 @@ import { AttackSprite } from './AttackSprite';
 import { Board } from '../board/Board';
 import { Wall } from '../wall/Wall';
 import { EventBus, GameEvents } from '../util/EventBus';
-import { BATTLEFIELD_Y, PLAYER_BOARD_Y, WALL_HEIGHT } from '../game/constants';
+import { BATTLEFIELD_Y, PLAYER_BOARD_Y, WALL_HEIGHT, CELL_SIZE } from '../game/constants';
+import { UnitManager, ActiveUnit } from '../unit/UnitManager';
 
 interface ActiveAttack {
   attack: Attack;
@@ -18,6 +19,7 @@ export class AttackManager {
   private enemyWall: Wall;
   private playerBoard: Board;
   private enemyBoard: Board;
+  private unitManager: UnitManager | null = null;
 
   constructor(
     scene: Phaser.Scene,
@@ -29,6 +31,10 @@ export class AttackManager {
     this.enemyWall = enemyWall;
     this.playerBoard = playerBoard;
     this.enemyBoard = enemyBoard;
+  }
+
+  setUnitManager(um: UnitManager): void {
+    this.unitManager = um;
   }
 
   fireAttack(owner: 'player' | 'enemy', column: number, power: number, color: number): void {
@@ -53,6 +59,21 @@ export class AttackManager {
     for (let i = this.active.length - 1; i >= 0; i--) {
       const { attack, sprite } = this.active[i];
       const arrived = attack.update(delta);
+
+      // Check attack-vs-unit collision
+      if (this.unitManager) {
+        const hitUnit = this.checkAttackVsUnit(attack);
+        if (hitUnit) {
+          hitUnit.unit.hp -= attack.power;
+          console.log(
+            `[${attack.owner}] Attack hit unit col=${attack.column} ` +
+            `atkPower=${attack.power} remaining unitHP=${hitUnit.unit.hp}`
+          );
+          sprite.destroy();
+          this.active.splice(i, 1);
+          continue;
+        }
+      }
 
       // Check wall collision
       const wall = attack.owner === 'player' ? this.enemyWall : this.playerWall;
@@ -114,5 +135,22 @@ export class AttackManager {
         sprite.update(attack.worldY);
       }
     }
+  }
+
+  private checkAttackVsUnit(attack: Attack): ActiveUnit | null {
+    if (!this.unitManager) return null;
+
+    const COLLISION_THRESHOLD = CELL_SIZE * 0.8;
+
+    for (const au of this.unitManager.getActiveUnits()) {
+      if (au.unit.owner === attack.owner) continue;
+      if (au.unit.column !== attack.column) continue;
+
+      const dist = Math.abs(au.unit.worldY - attack.worldY);
+      if (dist < COLLISION_THRESHOLD) {
+        return au;
+      }
+    }
+    return null;
   }
 }

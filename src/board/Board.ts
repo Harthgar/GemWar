@@ -208,6 +208,23 @@ export class Board {
     return unlocked;
   }
 
+  /** Re-randomize all unlocked gems without creating 3+ runs. Loops until valid moves exist. */
+  shuffle(): void {
+    do {
+      for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+          const gem = this.grid[r][c];
+          if (!gem || gem.locked) continue;
+          let color: GemColor;
+          do {
+            color = Math.floor(Math.random() * GEM_COLORS) as GemColor;
+          } while (this.wouldMatchAt(r, c, color));
+          gem.color = color;
+        }
+      }
+    } while (this.findAllValidMoves().length === 0);
+  }
+
   findAllValidMoves(): Array<[GridPos, GridPos]> {
     const moves: Array<[GridPos, GridPos]> = [];
     for (let r = 0; r < this.rows; r++) {
@@ -266,6 +283,34 @@ export class Board {
     while (r < this.rows && this.gemAt(r, pos.col)?.color === color && !this.gemAt(r, pos.col)!.locked) { vCount++; r++; }
     if (vCount >= 3) return true;
 
+    // 2x2 square check
+    if (this.hasSquareAt(pos)) return true;
+
+    return false;
+  }
+
+  /** Check if the gem at pos is part of any 2x2 block of same-color, unlocked gems */
+  private hasSquareAt(pos: GridPos): boolean {
+    const gem = this.gemAt(pos.row, pos.col);
+    if (!gem || gem.locked) return false;
+    const color = gem.color;
+
+    // Check the 4 possible 2x2 blocks that include (row, col)
+    const offsets = [[0, 0], [0, -1], [-1, 0], [-1, -1]];
+    for (const [dr, dc] of offsets) {
+      const r = pos.row + dr;
+      const c = pos.col + dc;
+      const a = this.gemAt(r, c);
+      const b = this.gemAt(r, c + 1);
+      const d = this.gemAt(r + 1, c);
+      const e = this.gemAt(r + 1, c + 1);
+      if (a && b && d && e &&
+          !a.locked && !b.locked && !d.locked && !e.locked &&
+          a.color === color && b.color === color &&
+          d.color === color && e.color === color) {
+        return true;
+      }
+    }
     return false;
   }
 }

@@ -15,6 +15,12 @@ export class Wall {
     return this.segments[column];
   }
 
+  /** Heal a wall segment. Returns new HP. */
+  heal(column: number, amount: number): number {
+    this.segments[column] += amount;
+    return this.segments[column];
+  }
+
   isDestroyed(column: number): boolean {
     return this.segments[column] <= 0;
   }

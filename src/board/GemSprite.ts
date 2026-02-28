@@ -40,6 +40,10 @@ export class GemSprite {
     });
   }
 
+  setColor(color: number): void {
+    this.gameObject.setFillStyle(COLOR_MAP[color] ?? 0xffffff);
+  }
+
   setLocked(locked: boolean): void {
     if (locked) {
       this.gameObject.setAlpha(0.4);

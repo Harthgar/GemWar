@@ -12,6 +12,10 @@ export class SwapHandler {
   private selectedGem: GridPos | null = null;
   private processing = false;
 
+  get isProcessing(): boolean {
+    return this.processing;
+  }
+
   constructor(board: Board, renderer: BoardRenderer) {
     this.board = board;
     this.renderer = renderer;
