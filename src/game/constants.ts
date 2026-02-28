@@ -161,6 +161,14 @@ export const UNIT_IS_AOE: Record<UnitType, boolean> = {
   [UnitType.Wizard]: true, [UnitType.Wizard2]: true,
 };
 
+// Cross-column targeting reach (number of columns to each side)
+export const UNIT_COLUMN_REACH: Record<UnitType, number> = {
+  [UnitType.BasicMelee]: 0, [UnitType.Shield2]: 0, [UnitType.Shield3]: 0,
+  [UnitType.Spearman]: 1, [UnitType.Spearman2]: 1,
+  [UnitType.Archer]: 2, [UnitType.Archer2]: 2,
+  [UnitType.Wizard]: 3, [UnitType.Wizard2]: 3,
+};
+
 // Projectile speed for arrows/orbs (px/ms)
 export const UNIT_PROJECTILE_SPEED = 1.5;
 

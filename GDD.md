@@ -191,7 +191,14 @@ Units from both sides march toward each other through the battlefield. When oppo
 ### Range Advantages
 - Spearmen outreach basic melee and shield units — they deal damage before the melee unit can strike
 - Archers can attack from a distance, potentially damaging or destroying units before melee contact
-- Wizards have the greatest range and power (TBD: area effects)
+- Wizards have the greatest range and power; AoE splash damages enemies in adjacent columns
+
+### Cross-Column Targeting
+- Spearmen can target enemies up to 1 column away
+- Archers can target enemies up to 2 columns away
+- Wizards can target enemies up to 3 columns away
+- Melee and shield units only fight in their own column
+- Ranged units prefer same-column targets; cross-column targeting uses the same engagement range (circular)
 
 ### Movement
 - Units move through the continuous battlefield at a constant speed
@@ -256,6 +263,15 @@ Each of the 6 gem colors will produce a distinct attack type and unit variant:
 - Use Capacitor or similar wrapper for app store deployment
 - UI/UX adjustments for smaller screens and touch-only input
 - The scrollbar/minimap will need touch-friendly interaction
+
+### Free Unit Movement
+- Currently units are column-locked and only move vertically
+- Future: units could move freely in 2D across the battlefield
+- Collision/bumping could push units sideways out of their starting column
+- Ranged units would have true circular engagement ranges
+- Melee units passing close enough would stop and fight regardless of column
+- This would require reworking movement, combat, wall/board interaction, and spawning
+- Recommended incremental approach: start with lateral nudging on collision + circular range for ranged units
 
 ### Multiplayer
 - Real-time PvP over network

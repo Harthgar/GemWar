@@ -8,9 +8,9 @@ import { Wall } from '../wall/Wall';
 import { EventBus, GameEvents } from '../util/EventBus';
 import {
   BATTLEFIELD_Y, PLAYER_BOARD_Y, WALL_HEIGHT,
-  UnitType, UNIT_ATTACK_INTERVAL,
+  UnitType, UNIT_ATTACK_INTERVAL, CELL_SIZE,
   UNIT_ENGAGE_RANGE, UNIT_IS_RANGED, UNIT_IS_AOE,
-  BOARD_COLS,
+  UNIT_COLUMN_REACH,
 } from '../game/constants';
 
 export interface ActiveUnit {
@@ -251,17 +251,23 @@ export class UnitManager {
       if (u.isDead) continue;
 
       const myRange = UNIT_ENGAGE_RANGE[u.unitType];
+      const myColumnReach = UNIT_COLUMN_REACH[u.unitType];
 
-      // Find nearest enemy in same column (any state — units at walls/boards can fight too)
+      // Find nearest enemy within column reach, using Euclidean distance
       let nearestEnemy: ActiveUnit | null = null;
       let nearestDist = Infinity;
 
       for (const defender of defenders) {
         const e = defender.unit;
         if (e.isDead) continue;
-        if (e.column !== u.column) continue;
 
-        const dist = Math.abs(u.worldY - e.worldY);
+        const colDiff = Math.abs(e.column - u.column);
+        if (colDiff > myColumnReach) continue;
+
+        // Euclidean distance using world positions
+        const dx = e.worldX - u.worldX;
+        const dy = e.worldY - u.worldY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < nearestDist) {
           nearestDist = dist;
           nearestEnemy = defender;
@@ -299,6 +305,7 @@ export class UnitManager {
       source.color,
       source.worldX,
       source.worldY,
+      target.worldX,
       target.worldY,
     );
     const sprite = new ProjectileSprite(this.scene, projectile);
@@ -322,19 +329,18 @@ export class UnitManager {
 
   private resolveProjectileHit(projectile: Projectile): void {
     if (projectile.isAoe) {
-      // Wizard AoE: damage all enemies within range across col-1/col/col+1
-      const aoeRange = UNIT_ENGAGE_RANGE[UnitType.Wizard];
-      const minCol = Math.max(0, projectile.column - 1);
-      const maxCol = Math.min(BOARD_COLS - 1, projectile.column + 1);
+      // Wizard AoE: damage all enemies within splash radius of impact point
+      const splashRadius = CELL_SIZE * 1.5; // 1.5 cells around impact
 
       for (const au of this.active) {
         const e = au.unit;
         if (e.owner === projectile.owner) continue;
         if (e.isDead) continue;
-        if (e.column < minCol || e.column > maxCol) continue;
 
-        const yDist = Math.abs(e.worldY - projectile.targetY);
-        if (yDist <= aoeRange) {
+        const dx = e.worldX - projectile.worldX;
+        const dy = e.worldY - projectile.worldY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist <= splashRadius) {
           e.hp -= projectile.damage;
         }
       }
