@@ -33,6 +33,14 @@ export class AttackManager {
     this.enemyBoard = enemyBoard;
   }
 
+  getActiveAttacks(): { owner: 'player' | 'enemy'; worldX: number; worldY: number }[] {
+    return this.active.map(a => ({
+      owner: a.attack.owner,
+      worldX: a.attack.worldX,
+      worldY: a.attack.worldY,
+    }));
+  }
+
   setUnitManager(um: UnitManager): void {
     this.unitManager = um;
   }

@@ -48,7 +48,8 @@ export const MINIMAP_HEIGHT = GAME_HEIGHT - MINIMAP_PADDING * 2;
 export const CAMERA_WIDTH = GAME_WIDTH - MINIMAP_WIDTH;                    // 740
 
 // Wall (must be before zoom calculation)
-export const WALL_SEGMENT_HP = 10;
+export const WALL_SEGMENT_HP = 100;
+export const WALL_DISPLAY_DIVISOR = 10; // display HP in increments of 10
 export const WALL_HEIGHT = 32;
 
 // Viewport split: board = bottom third, world = top two thirds
@@ -66,9 +67,9 @@ export const BOARD_X = (GAME_WIDTH - BOARD_PIXEL_WIDTH) / 2;
 export const ENEMY_MOVE_INTERVAL_MIN = 1500;
 export const ENEMY_MOVE_INTERVAL_MAX = 3000;
 
-// Attack power scaling: power = 2^(matchLength - 3)
+// Attack power scaling: 10 * 2^(matchLength - 3)
 export function attackPower(matchLength: number): number {
-  return Math.pow(2, matchLength - 3);
+  return 10 * Math.pow(2, matchLength - 3);
 }
 
 // Attacks
@@ -130,4 +131,36 @@ export function specialUnitType(verticalLength: number): UnitType {
   if (verticalLength === 7) return UnitType.Wizard;
   return UnitType.Wizard2;
 }
+
+// Engagement ranges (world pixels)
+export const UNIT_ENGAGE_RANGE: Record<UnitType, number> = {
+  [UnitType.BasicMelee]: CELL_SIZE * 0.5,   // 32px
+  [UnitType.Shield2]:    CELL_SIZE * 0.5,    // 32px
+  [UnitType.Shield3]:    CELL_SIZE * 0.5,    // 32px
+  [UnitType.Spearman]:   CELL_SIZE * 1.5,    // 96px
+  [UnitType.Spearman2]:  CELL_SIZE * 2.0,    // 128px
+  [UnitType.Archer]:     CELL_SIZE * 4.0,    // 256px
+  [UnitType.Archer2]:    CELL_SIZE * 5.0,    // 320px
+  [UnitType.Wizard]:     CELL_SIZE * 6.0,    // 384px
+  [UnitType.Wizard2]:    CELL_SIZE * 7.0,    // 448px
+};
+
+// Which units fire visible projectiles (vs direct melee damage)
+export const UNIT_IS_RANGED: Record<UnitType, boolean> = {
+  [UnitType.BasicMelee]: false, [UnitType.Shield2]: false, [UnitType.Shield3]: false,
+  [UnitType.Spearman]: false, [UnitType.Spearman2]: false,
+  [UnitType.Archer]: true, [UnitType.Archer2]: true,
+  [UnitType.Wizard]: true, [UnitType.Wizard2]: true,
+};
+
+// Which units have AoE splash (col-1, col, col+1)
+export const UNIT_IS_AOE: Record<UnitType, boolean> = {
+  [UnitType.BasicMelee]: false, [UnitType.Shield2]: false, [UnitType.Shield3]: false,
+  [UnitType.Spearman]: false, [UnitType.Spearman2]: false,
+  [UnitType.Archer]: false, [UnitType.Archer2]: false,
+  [UnitType.Wizard]: true, [UnitType.Wizard2]: true,
+};
+
+// Projectile speed for arrows/orbs (px/ms)
+export const UNIT_PROJECTILE_SPEED = 1.5;
 

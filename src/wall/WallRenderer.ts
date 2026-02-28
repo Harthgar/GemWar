@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Wall } from './Wall';
-import { BOARD_X, BOARD_COLS, CELL_SIZE, WALL_HEIGHT } from '../game/constants';
+import { BOARD_X, BOARD_COLS, CELL_SIZE, WALL_HEIGHT, WALL_DISPLAY_DIVISOR } from '../game/constants';
 
 const WALL_COLOR = 0x667788;
 const WALL_DESTROYED_ALPHA = 0.15;
@@ -28,7 +28,7 @@ export class WallRenderer {
       );
       rect.setStrokeStyle(1, 0x8899aa);
 
-      const hpText = scene.add.text(x, y, `${wall.segments[col]}`, {
+      const hpText = scene.add.text(x, y, `${Math.ceil(wall.segments[col] / WALL_DISPLAY_DIVISOR)}`, {
         fontSize: '12px',
         color: '#ffffff',
         fontFamily: 'monospace',
@@ -49,7 +49,7 @@ export class WallRenderer {
       visual.hpText.setText('');
     } else {
       visual.rect.setAlpha(1);
-      visual.hpText.setText(`${hp}`);
+      visual.hpText.setText(`${Math.ceil(hp / WALL_DISPLAY_DIVISOR)}`);
     }
   }
 }

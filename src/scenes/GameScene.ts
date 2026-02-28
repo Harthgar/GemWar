@@ -10,6 +10,7 @@ import { Wall } from '../wall/Wall';
 import { WallRenderer } from '../wall/WallRenderer';
 import { EventBus, GameEvents } from '../util/EventBus';
 import { MatchGroup, MatchGroupType } from '../board/MatchDetector';
+import { GridPos, areAdjacent } from '../util/GridPosition';
 import { UnitManager } from '../unit/UnitManager';
 import {
   BOARD_X, BOARD_COLS, CELL_SIZE,
@@ -133,13 +134,16 @@ export class GameScene extends Phaser.Scene {
         }
       }
 
-      // Horizontal matches spawn regular units
+      // Horizontal matches spawn regular units (skip vertical column in L/T — special unit replaces it)
       if (group.horizontalColumns.length > 0 && group.horizontalLength >= 3) {
         const unitType = horizontalMatchUnitType(group.horizontalLength);
         const rowCount = horizontalMatchRowCount(group.horizontalLength);
+        const skipCol = (group.type === MatchGroupType.LShape || group.type === MatchGroupType.TShape)
+          ? group.verticalColumn : null;
         for (let row = 0; row < rowCount; row++) {
           const stagger = row * UNIT_ROW_STAGGER;
           for (const col of group.horizontalColumns) {
+            if (col === skipCol) continue;
             this.unitManager.spawnUnit(owner, col, unitType, group.color, stagger);
           }
         }
@@ -151,7 +155,7 @@ export class GameScene extends Phaser.Scene {
         const renderer = owner === 'player'
           ? this.playerWallRenderer : this.enemyWallRenderer;
         for (const col of group.squareColumns) {
-          wall.heal(col, 1);
+          wall.heal(col, 10);
           renderer.updateSegment(col);
           console.log(
             `[${owner}] Square healed wall col=${col} HP=${wall.segments[col]}`
@@ -170,18 +174,46 @@ export class GameScene extends Phaser.Scene {
     // Add board labels
     this.addBoardLabels();
 
-    // Player input: click/tap on the board area
+    // Player input: click/tap and swipe on the board area
+    let dragStartGrid: GridPos | null = null;
+    let didSwipe = false;
+
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      // Don't handle board clicks if clicking on the minimap
       if (this.isMinimapClick(pointer)) return;
+      dragStartGrid = null;
+      didSwipe = false;
 
       const world = this.viewport.pointerToWorld(pointer);
       if (world.inBoard) {
-        const gridPos = this.playerRenderer.worldToGrid(world.x, world.y);
-        if (gridPos) {
-          this.playerSwapHandler.onCellSelected(gridPos);
+        dragStartGrid = this.playerRenderer.worldToGrid(world.x, world.y);
+      }
+    });
+
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (!pointer.isDown || !dragStartGrid || didSwipe) return;
+
+      const world = this.viewport.pointerToWorld(pointer);
+      if (!world.inBoard) return;
+
+      const currentGrid = this.playerRenderer.worldToGrid(world.x, world.y);
+      if (!currentGrid) return;
+
+      // If pointer moved to a different adjacent cell, trigger swipe
+      if (currentGrid.row !== dragStartGrid.row || currentGrid.col !== dragStartGrid.col) {
+        if (areAdjacent(dragStartGrid, currentGrid)) {
+          didSwipe = true;
+          this.playerSwapHandler.onSwipe(dragStartGrid, currentGrid);
         }
       }
+    });
+
+    this.input.on('pointerup', (_pointer: Phaser.Input.Pointer) => {
+      // If no swipe occurred, treat as a click
+      if (!didSwipe && dragStartGrid) {
+        this.playerSwapHandler.onCellSelected(dragStartGrid);
+      }
+      dragStartGrid = null;
+      didSwipe = false;
     });
 
     // Shuffle button (world space, left of player board)
@@ -226,8 +258,28 @@ export class GameScene extends Phaser.Scene {
     this.attackManager.update(delta);
     this.unitManager.update(delta);
 
-    // Update minimap
-    this.minimap.update();
+    // Update minimap with unit, attack, wall, and locked gem data
+    const units = this.unitManager.getActiveUnits().map(au => ({
+      owner: au.unit.owner,
+      worldX: au.unit.worldX,
+      worldY: au.unit.worldY,
+    }));
+    const attacks = this.attackManager.getActiveAttacks();
+
+    const lockedGems: Array<{ owner: 'player' | 'enemy'; row: number; col: number }> = [];
+    this.playerBoard.forEachGem((gem, row, col) => {
+      if (gem.locked) lockedGems.push({ owner: 'player', row, col });
+    });
+    this.enemyBoard.forEachGem((gem, row, col) => {
+      if (gem.locked) lockedGems.push({ owner: 'enemy', row, col });
+    });
+
+    this.minimap.update(
+      units, attacks,
+      { segments: this.playerWall.segments },
+      { segments: this.enemyWall.segments },
+      lockedGems,
+    );
   }
 
   private addBoardLabels(): void {

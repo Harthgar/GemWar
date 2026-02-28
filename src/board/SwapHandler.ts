@@ -51,6 +51,21 @@ export class SwapHandler {
     }
   }
 
+  /** Called when user swipes from one cell to an adjacent cell */
+  onSwipe(from: GridPos, to: GridPos): void {
+    if (this.processing) return;
+    if (!areAdjacent(from, to)) return;
+
+    const gemFrom = this.board.gemAt(from.row, from.col);
+    if (!gemFrom || gemFrom.locked) return;
+
+    // Clear any existing click-selection since the swipe takes priority
+    this.selectedGem = null;
+    this.renderer.clearHighlight();
+
+    this.attemptSwap(from, to);
+  }
+
   private async attemptSwap(posA: GridPos, posB: GridPos): Promise<void> {
     this.processing = true;
 

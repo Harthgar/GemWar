@@ -162,19 +162,23 @@ export class Board {
     return gem;
   }
 
-  /** Find the first unlocked gem in a column, scanning from the given direction.
-   *  'bottom' scans row 7→0 (for attacks arriving from below).
-   *  'top' scans row 0→7 (for attacks arriving from above). */
+  /** Find the front-most unlocked gem in a column from the given direction.
+   *  Only returns a gem that is at the board edge or directly adjacent to a
+   *  contiguous locked section from that edge — no jumping over unlocked gaps.
+   *  'bottom' scans row 7→0 (for attacks/units arriving from below).
+   *  'top' scans row 0→7 (for attacks/units arriving from above). */
   findFirstUnlockedGem(col: number, from: 'top' | 'bottom'): Gem | null {
     if (from === 'bottom') {
       for (let r = this.rows - 1; r >= 0; r--) {
         const gem = this.grid[r][col];
-        if (gem && !gem.locked) return gem;
+        if (!gem) return null; // null cell stops progression
+        if (!gem.locked) return gem;
       }
     } else {
       for (let r = 0; r < this.rows; r++) {
         const gem = this.grid[r][col];
-        if (gem && !gem.locked) return gem;
+        if (!gem) return null; // null cell stops progression
+        if (!gem.locked) return gem;
       }
     }
     return null;

@@ -22,6 +22,8 @@ export class Unit {
   hp: number; // takes damage, unit dies when <= 0
   state: UnitState = 'marching';
   attackCooldown = 0; // ms until next attack
+  inCombat = false; // set each frame by resolveUnitCombat
+  combatTargetId: number | null = null; // id of current combat target
 
   constructor(
     owner: 'player' | 'enemy',

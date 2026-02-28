@@ -1,12 +1,16 @@
 import Phaser from 'phaser';
 import { Unit } from './Unit';
 import { UnitSprite } from './UnitSprite';
+import { Projectile } from './Projectile';
+import { ProjectileSprite } from './ProjectileSprite';
 import { Board } from '../board/Board';
 import { Wall } from '../wall/Wall';
 import { EventBus, GameEvents } from '../util/EventBus';
 import {
   BATTLEFIELD_Y, PLAYER_BOARD_Y, WALL_HEIGHT,
-  UnitType, CELL_SIZE, UNIT_ATTACK_INTERVAL,
+  UnitType, UNIT_ATTACK_INTERVAL,
+  UNIT_ENGAGE_RANGE, UNIT_IS_RANGED, UNIT_IS_AOE,
+  BOARD_COLS,
 } from '../game/constants';
 
 export interface ActiveUnit {
@@ -14,9 +18,15 @@ export interface ActiveUnit {
   sprite: UnitSprite;
 }
 
+interface ActiveProjectile {
+  projectile: Projectile;
+  sprite: ProjectileSprite;
+}
+
 export class UnitManager {
   private scene: Phaser.Scene;
   private active: ActiveUnit[] = [];
+  private projectiles: ActiveProjectile[] = [];
   private playerWall: Wall;
   private enemyWall: Wall;
   private playerBoard: Board;
@@ -65,10 +75,19 @@ export class UnitManager {
   }
 
   update(delta: number): void {
-    // 1. Resolve unit-vs-unit combat (periodic, respects cooldowns)
+    // 0. Clear inCombat flags
+    for (const { unit } of this.active) {
+      unit.inCombat = false;
+      unit.combatTargetId = null;
+    }
+
+    // 1. Resolve unit-vs-unit combat (range-aware, fires projectiles or melee)
     this.resolveUnitCombat();
 
-    // 2. Update each unit based on state
+    // 2. Update projectiles in flight
+    this.updateProjectiles(delta);
+
+    // 3. Update each unit based on state
     for (let i = this.active.length - 1; i >= 0; i--) {
       const { unit, sprite } = this.active[i];
 
@@ -101,6 +120,12 @@ export class UnitManager {
     const wallY = unit.owner === 'player'
       ? BATTLEFIELD_Y + WALL_HEIGHT
       : PLAYER_BOARD_Y - WALL_HEIGHT;
+
+    // If in combat, halt movement
+    if (unit.inCombat) {
+      sprite.update(unit.worldY, unit.hp);
+      return;
+    }
 
     // Move
     unit.worldY += unit.speed * delta;
@@ -139,6 +164,12 @@ export class UnitManager {
       return;
     }
 
+    // If in combat with a unit, fight the unit instead of the wall
+    if (unit.inCombat) {
+      sprite.update(unit.worldY, unit.hp);
+      return;
+    }
+
     // Attack wall on cooldown
     if (unit.attackCooldown <= 0) {
       const remainingHp = wall.damage(unit.column, unit.strength);
@@ -156,6 +187,12 @@ export class UnitManager {
 
   private updateAttackingBoard(unit: Unit, sprite: UnitSprite): void {
     const targetBoard = unit.owner === 'player' ? this.enemyBoard : this.playerBoard;
+
+    // If in combat with a unit, fight the unit instead of the board
+    if (unit.inCombat) {
+      sprite.update(unit.worldY, unit.hp);
+      return;
+    }
 
     // Attack board on cooldown — lock a gem
     if (unit.attackCooldown <= 0) {
@@ -191,30 +228,121 @@ export class UnitManager {
     sprite.update(unit.worldY, unit.hp);
   }
 
+  /**
+   * Range-aware combat resolution.
+   * Each unit independently checks if nearest enemy is within its engagement range.
+   * Shorter-range units keep marching; longer-range units get free hits.
+   */
   private resolveUnitCombat(): void {
-    const COLLISION_THRESHOLD = CELL_SIZE * 0.5;
-
     const playerUnits = this.active.filter(a => a.unit.owner === 'player' && !a.unit.isDead);
     const enemyUnits = this.active.filter(a => a.unit.owner === 'enemy' && !a.unit.isDead);
 
-    for (const pu of playerUnits) {
-      for (const eu of enemyUnits) {
-        if (pu.unit.isDead || eu.unit.isDead) continue;
-        if (pu.unit.column !== eu.unit.column) continue;
+    // Each side independently evaluates engagement
+    this.engageUnitsAgainstOpponents(playerUnits, enemyUnits);
+    this.engageUnitsAgainstOpponents(enemyUnits, playerUnits);
+  }
 
-        const dist = Math.abs(pu.unit.worldY - eu.unit.worldY);
-        if (dist < COLLISION_THRESHOLD) {
-          // Both units stop marching while in combat
-          // Attack each other on cooldown
-          if (pu.unit.attackCooldown <= 0) {
-            eu.unit.hp -= pu.unit.strength;
-            pu.unit.attackCooldown = UNIT_ATTACK_INTERVAL;
-          }
-          if (eu.unit.attackCooldown <= 0) {
-            pu.unit.hp -= eu.unit.strength;
-            eu.unit.attackCooldown = UNIT_ATTACK_INTERVAL;
-          }
+  private engageUnitsAgainstOpponents(
+    attackers: ActiveUnit[],
+    defenders: ActiveUnit[],
+  ): void {
+    for (const attacker of attackers) {
+      const u = attacker.unit;
+      if (u.isDead) continue;
+
+      const myRange = UNIT_ENGAGE_RANGE[u.unitType];
+
+      // Find nearest enemy in same column (any state — units at walls/boards can fight too)
+      let nearestEnemy: ActiveUnit | null = null;
+      let nearestDist = Infinity;
+
+      for (const defender of defenders) {
+        const e = defender.unit;
+        if (e.isDead) continue;
+        if (e.column !== u.column) continue;
+
+        const dist = Math.abs(u.worldY - e.worldY);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          nearestEnemy = defender;
         }
+      }
+
+      if (nearestEnemy && nearestDist <= myRange) {
+        // Target in range — stop and fight
+        u.inCombat = true;
+        u.combatTargetId = nearestEnemy.unit.id;
+
+        // Attack on cooldown
+        if (u.attackCooldown <= 0) {
+          if (UNIT_IS_RANGED[u.unitType]) {
+            // Fire a visible projectile
+            this.fireProjectile(u, nearestEnemy.unit, UNIT_IS_AOE[u.unitType]);
+          } else {
+            // Direct melee/spear damage
+            nearestEnemy.unit.hp -= u.strength;
+          }
+          u.attackCooldown = UNIT_ATTACK_INTERVAL;
+        }
+      }
+    }
+  }
+
+  private fireProjectile(source: Unit, target: Unit, isAoe: boolean): void {
+    const projectile = new Projectile(
+      source.owner,
+      source.id,
+      target.id,
+      source.strength,
+      isAoe,
+      source.column,
+      source.color,
+      source.worldX,
+      source.worldY,
+      target.worldY,
+    );
+    const sprite = new ProjectileSprite(this.scene, projectile);
+    this.projectiles.push({ projectile, sprite });
+  }
+
+  private updateProjectiles(delta: number): void {
+    for (let i = this.projectiles.length - 1; i >= 0; i--) {
+      const { projectile, sprite } = this.projectiles[i];
+      const arrived = projectile.update(delta);
+
+      if (arrived) {
+        this.resolveProjectileHit(projectile);
+        sprite.destroy();
+        this.projectiles.splice(i, 1);
+      } else {
+        sprite.update(projectile.worldX, projectile.worldY);
+      }
+    }
+  }
+
+  private resolveProjectileHit(projectile: Projectile): void {
+    if (projectile.isAoe) {
+      // Wizard AoE: damage all enemies within range across col-1/col/col+1
+      const aoeRange = UNIT_ENGAGE_RANGE[UnitType.Wizard];
+      const minCol = Math.max(0, projectile.column - 1);
+      const maxCol = Math.min(BOARD_COLS - 1, projectile.column + 1);
+
+      for (const au of this.active) {
+        const e = au.unit;
+        if (e.owner === projectile.owner) continue;
+        if (e.isDead) continue;
+        if (e.column < minCol || e.column > maxCol) continue;
+
+        const yDist = Math.abs(e.worldY - projectile.targetY);
+        if (yDist <= aoeRange) {
+          e.hp -= projectile.damage;
+        }
+      }
+    } else {
+      // Single-target arrow: hit original target if still alive
+      const target = this.active.find(a => a.unit.id === projectile.targetUnitId);
+      if (target && !target.unit.isDead) {
+        target.unit.hp -= projectile.damage;
       }
     }
   }

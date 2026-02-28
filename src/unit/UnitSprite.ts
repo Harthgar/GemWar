@@ -3,7 +3,7 @@ import { Unit } from './Unit';
 import { UnitType, CELL_SIZE } from '../game/constants';
 import { COLOR_MAP } from '../board/GemSprite';
 
-const UNIT_SIZE = CELL_SIZE * 0.5; // 32px base
+const UNIT_SIZE = CELL_SIZE * 1.0; // 64px base
 
 const UNIT_SHAPE_CONFIG: Record<UnitType, { width: number; height: number; label: string }> = {
   [UnitType.BasicMelee]:  { width: UNIT_SIZE * 0.7,  height: UNIT_SIZE * 0.7,  label: 'M' },
@@ -35,16 +35,16 @@ export class UnitSprite {
     );
     this.body.setStrokeStyle(2, 0xffffff, 0.5);
 
-    this.label = scene.add.text(unit.worldX, unit.worldY - 6, config.label, {
-      fontSize: '10px',
+    this.label = scene.add.text(unit.worldX, unit.worldY - 12, config.label, {
+      fontSize: '20px',
       color: '#ffffff',
       fontFamily: 'monospace',
       fontStyle: 'bold',
     });
     this.label.setOrigin(0.5, 0.5);
 
-    this.strengthText = scene.add.text(unit.worldX, unit.worldY + 6, `${unit.hp}`, {
-      fontSize: '9px',
+    this.strengthText = scene.add.text(unit.worldX, unit.worldY + 12, `${unit.hp}`, {
+      fontSize: '18px',
       color: '#ffff88',
       fontFamily: 'monospace',
     });
@@ -53,8 +53,8 @@ export class UnitSprite {
 
   update(worldY: number, hp: number): void {
     this.body.setPosition(this.body.x, worldY);
-    this.label.setPosition(this.label.x, worldY - 6);
-    this.strengthText.setPosition(this.strengthText.x, worldY + 6);
+    this.label.setPosition(this.label.x, worldY - 12);
+    this.strengthText.setPosition(this.strengthText.x, worldY + 12);
     this.strengthText.setText(`${Math.ceil(hp)}`);
   }
 
