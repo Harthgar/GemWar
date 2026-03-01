@@ -130,7 +130,7 @@ export class GameScene extends Phaser.Scene {
           this.unitManager.spawnUnit(owner, group.verticalColumn, special, group.color);
         } else {
           const power = attackPower(group.verticalLength);
-          this.attackManager.fireAttack(owner, group.verticalColumn, power, group.color);
+          this.attackManager.fireAttack(owner, group.verticalColumn, power, group.color, group.verticalLength);
         }
       }
 

@@ -65,28 +65,63 @@ GemWar is a real-time competitive match-3 game where two opponents each control 
 
 ## 4. Vertical Matches — Attacks
 
-A vertical match (3+ gems in the same column) fires a projectile attack upward from that column toward the enemy.
+A vertical match (3+ gems in the same column) fires an attack upward from that column toward the enemy. The attack type depends on the gem color. Match length determines attack level (1-6).
 
 ### Attack Power Scaling
-| Match Length | Power | Notes |
-|---|---|---|
-| 3 | 1x | Basic attack |
-| 4 | 2x | |
-| 5 | 4x | |
-| 6 | 8x | |
-| 7 | 16x | |
-| 8 | 32x | Full-column match |
+| Match Length | Level | Base Power | Notes |
+|---|---|---|---|
+| 3 | 1 | 1x | Basic attack |
+| 4 | 2 | 2x | |
+| 5 | 3 | 4x | |
+| 6 | 4 | 8x | |
+| 7 | 5 | 16x | |
+| 8 | 6 | 32x | Full-column match |
 
-Each additional gem roughly doubles the attack power.
+Each additional gem roughly doubles the attack power. All attack types follow this base damage curve.
 
-### Attack Behavior
-- **Travel:** Attacks are projectiles that travel through the battlefield at high speed — fast but not instant (roughly 1-2 seconds to cross the full field). This creates a small window for interception
-- **Column-locked:** Attacks travel in the column where the match occurred
-- **Unit interaction:** Attacks can strike enemy units in their path, stopping or partially diminishing the attack based on the unit's strength
+### General Attack Behavior
+- **Column-locked:** All attacks travel in the column where the match occurred (secondary effects like splash or chains may reach other columns)
 - **Wall interaction:** Attacks hit wall segments and deal damage proportional to their power
-- **Board interaction:** If an attack reaches the enemy board, it locks one gem square at the point of impact (the lowest unlocked gem in that column)
-- **Locked square pass-through:** If the target gem is already locked, the attack passes through and locks the next unlocked gem above it
-- **Visual style:** TBD per gem color (e.g., fireball, lightning bolt, ice shard). Prototype uses a generic projectile
+- **Board interaction:** If an attack reaches the enemy board, it locks one gem at the point of impact (the front-most unlocked gem in that column). Attacks are primarily anti-unit and anti-wall weapons; units are the primary gem-locking threat
+- **Locked gem pass-through:** If the target gem is already locked, the attack passes through and locks the next unlocked gem
+
+### Attack Types by Color
+
+#### Red — Fireball
+- **Visual:** Large glowing orb trailing flames
+- **Speed:** Medium
+- **Mechanic:** Travels in column, explodes on impact with AoE splash. Splash damages all units within a distance-based radius (circular, not column-bounded). Best at clearing clusters of units
+- **Level scaling:** Splash radius grows with level (e.g. 0.5 → 1 → 1.5 → 2 → 2.5 → 3 cells)
+
+#### Blue — Frost Bolt
+- **Visual:** Sharp icicle projectile
+- **Speed:** Medium-fast
+- **Mechanic:** Pierces through enemies in its column, freezing/slowing each one hit. Stops on the last unit it can't pierce past. Frozen units have reduced movement speed
+- **Level scaling:** Pierce count: 0, 1, 2, 3, 4, 5 (starts at 0, +1 per level). Freeze duration increases with level
+
+#### Green — Poison Shot
+- **Visual:** Bubbling dark-green projectile
+- **Speed:** Medium
+- **Mechanic:** Hits the first unit in its path. If the hit damage is enough to kill that unit, the attack passes through (subtracting HP dealt from remaining power) and continues to the next target. Applies heavy poison DoT to the unit it finally stops on. Most of the damage comes from the DoT. Best single-target killer — the answer to large, powerful enemy units
+- **Level scaling:** Pass-through count: 0, 1, 2, 3, 4, 5 (+1 per level). DoT total damage doubles per level
+
+#### Yellow — Lightning
+- **Visual:** Bright crackling arc
+- **Speed:** Very fast
+- **Mechanic:** Hits the first enemy in its column, then chains to the nearest enemy within range. Chains can jump to units in adjacent columns. Good against spread-out formations
+- **Level scaling:** Chain count: 1, 2, 3, 4, 5, 6 (starts at 1, +1 per level). Chain range grows with level. Each chain deals full damage
+
+#### Purple — Void Pulse
+- **Visual:** Dark expanding shockwave
+- **Speed:** Medium-slow
+- **Mechanic:** Passes through enemies in its column, pushing each one 1 column sideways. Disrupts enemy formations by displacing units out of their intended column — can strand melee units in columns where the wall is still intact. Lower base damage than other attacks (utility-focused)
+- **Level scaling:** Pierce count: 1, 3, 5, 7, 9, 11 (starts at 1, +2 per level)
+
+#### White — Holy Beam
+- **Visual:** Bright concentrated beam, full column flash
+- **Speed:** Instant (no travel time)
+- **Mechanic:** Instantly damages all units in its column path. Cannot be dodged or intercepted by timing. No secondary effects — pure concentrated damage. Steepest damage scaling of all colors. Best wall breaker
+- **Level scaling:** Pure damage increase (steepest base curve, no additional mechanics)
 
 ---
 
@@ -267,12 +302,10 @@ The opponent can defend by:
 
 These are discussed but intentionally deferred from the initial prototype:
 
-### Gem Color Differentiation
-Each of the 6 gem colors will produce a distinct attack type and unit variant:
-- **Red:** Fireball attacks, fire-themed units
-- **Blue:** Ice attacks (potential slow effect), ice-themed units
-- **Green, Yellow, Purple, White:** TBD
-- Color-specific effects may include: AoE damage, slowing, piercing, splash, healing allies, etc.
+### Gem Color Unit Differentiation
+- Attack types are fully specified in Section 4
+- Unit color differentiation is TBD — currently all colors produce the same unit types
+- Future: each color could produce units with distinct abilities (fire units deal AoE, ice units slow, etc.)
 
 ### Mobile Port
 - Basic mobile support implemented: tall 9:16 resolution (700x1136), touch-action CSS, swipe input for gem swapping

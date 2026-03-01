@@ -13,6 +13,29 @@ export enum GemColor {
   White = 5,
 }
 
+// Attack types (one per gem color)
+export enum AttackType {
+  Fireball = 'Fireball',
+  FrostBolt = 'FrostBolt',
+  PoisonShot = 'PoisonShot',
+  Lightning = 'Lightning',
+  VoidPulse = 'VoidPulse',
+  HolyBeam = 'HolyBeam',
+}
+
+export const GEM_ATTACK_TYPE: Record<GemColor, AttackType> = {
+  [GemColor.Red]: AttackType.Fireball,
+  [GemColor.Blue]: AttackType.FrostBolt,
+  [GemColor.Green]: AttackType.PoisonShot,
+  [GemColor.Yellow]: AttackType.Lightning,
+  [GemColor.Purple]: AttackType.VoidPulse,
+  [GemColor.White]: AttackType.HolyBeam,
+};
+
+export function attackLevel(matchLength: number): number {
+  return Math.min(6, Math.max(1, matchLength - 2));
+}
+
 // Gem texture keys (maps GemColor → Phaser texture key / filename stem)
 export const GEM_TEXTURE_KEYS: Record<number, string> = {
   [GemColor.Red]: 'gem_red',
@@ -43,9 +66,17 @@ export const BATTLEFIELD_Y = BOARD_PIXEL_HEIGHT;                           // 51
 export const PLAYER_BOARD_Y = BATTLEFIELD_Y + BATTLEFIELD_PIXEL_HEIGHT;    // 5632
 export const WORLD_HEIGHT = PLAYER_BOARD_Y + BOARD_PIXEL_HEIGHT;           // 6144
 
-// Game dimensions (mobile-friendly tall aspect ratio)
+// Game dimensions — dynamic height to fill the screen (no black bars)
 export const GAME_WIDTH = 700;
-export const GAME_HEIGHT = 1136;
+const BASE_HEIGHT = 1136;
+
+function computeGameHeight(): number {
+  if (typeof window === 'undefined') return BASE_HEIGHT;
+  const ratio = window.innerHeight / window.innerWidth;
+  return Math.max(BASE_HEIGHT, Math.round(GAME_WIDTH * ratio));
+}
+
+export const GAME_HEIGHT = computeGameHeight();
 
 // Minimap: full height on the right side
 export const MINIMAP_WIDTH = 120;
@@ -65,9 +96,9 @@ export const WALL_SEGMENT_HP = 100;
 export const WALL_DISPLAY_DIVISOR = 10; // display HP in increments of 10
 export const WALL_HEIGHT = 32;
 
-// Viewport split: board = bottom third, world = top two thirds
-export const BOARD_VIEW_HEIGHT = Math.floor(GAME_HEIGHT / 3);              // 378
-export const WORLD_VIEW_HEIGHT = GAME_HEIGHT - BOARD_VIEW_HEIGHT;          // 758
+// Viewport split: board view is fixed, extra height goes to world camera
+export const BOARD_VIEW_HEIGHT = Math.floor(BASE_HEIGHT / 3);              // 378
+export const WORLD_VIEW_HEIGHT = GAME_HEIGHT - BOARD_VIEW_HEIGHT;
 
 // Board camera zoom to fit board + player wall into the board view
 export const BOARD_CAMERA_WORLD_HEIGHT = BOARD_PIXEL_HEIGHT + WALL_HEIGHT; // 544
@@ -85,6 +116,43 @@ export function attackPower(matchLength: number): number {
 // Attacks
 export const ATTACK_TRAVEL_MS = 1500;
 export const ATTACK_SPEED = BATTLEFIELD_PIXEL_HEIGHT / ATTACK_TRAVEL_MS; // world px per ms
+
+// Per-type speed multipliers (0 = instant for HolyBeam)
+export const ATTACK_SPEED_MULTIPLIER: Record<AttackType, number> = {
+  [AttackType.Fireball]: 1.0,
+  [AttackType.FrostBolt]: 1.4,
+  [AttackType.PoisonShot]: 1.0,
+  [AttackType.Lightning]: 2.5,
+  [AttackType.VoidPulse]: 0.7,
+  [AttackType.HolyBeam]: 0,
+};
+
+// Red — Fireball: splash radius in cells [level 1-6]
+export const FIREBALL_SPLASH_RADIUS = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0];
+
+// Blue — Frost Bolt: pierce count [level 1-6], slow params
+export const FROSTBOLT_PIERCE = [0, 1, 2, 3, 4, 5];
+export const FROSTBOLT_SLOW_FACTOR = 0.4;
+export const FROSTBOLT_SLOW_BASE_MS = 3000;
+export const FROSTBOLT_SLOW_PER_LEVEL_MS = 500;
+
+// Green — Poison Shot: pass-through count [level 1-6], DoT params
+export const POISON_PASSTHROUGH = [0, 1, 2, 3, 4, 5];
+export const POISON_DOT_BASE_DAMAGE = 5;
+export const POISON_DOT_TICK_MS = 500;
+export const POISON_DOT_DURATION_MS = 4000;
+
+// Yellow — Lightning: chain count [level 1-6], chain range in cells
+export const LIGHTNING_CHAINS = [1, 2, 3, 4, 5, 6];
+export const LIGHTNING_CHAIN_RANGE_BASE = 1.5;
+export const LIGHTNING_CHAIN_RANGE_PER_LEVEL = 0.5;
+
+// Purple — Void Pulse: pierce count [level 1-6], damage reduction
+export const VOID_PULSE_PIERCE = [1, 3, 5, 7, 9, 11];
+export const VOID_PULSE_DAMAGE_MULT = 0.5;
+
+// White — Holy Beam: power multipliers [level 1-6]
+export const HOLY_BEAM_POWER_MULT = [1.5, 3, 6, 12, 24, 48];
 
 // Shuffle
 export const SHUFFLE_IDLE_MS = 10000;
@@ -121,9 +189,9 @@ export const UNIT_TEXTURE_KEYS: Record<UnitType, string> = {
   [UnitType.Wizard2]: 'unit_wizard2',
 };
 
-// Spritesheet frame dimensions (48x80 sheet = 3 cols x 4 rows → 16x20 per frame)
-export const UNIT_FRAME_WIDTH = 16;
-export const UNIT_FRAME_HEIGHT = 20;
+// Spritesheet frame dimensions (144x240 sheet = 3 cols x 4 rows → 48x60 per frame)
+export const UNIT_FRAME_WIDTH = 48;
+export const UNIT_FRAME_HEIGHT = 60;
 
 // Walk animation: RPGMaker layout has 4 directions (rows: down, left, right, up) x 3 frames
 // For units marching up (player) or down (enemy), we use the appropriate row

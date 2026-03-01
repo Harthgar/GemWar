@@ -10,4 +10,5 @@ export const GameEvents = {
   GEM_LOCKED: 'gem-locked',
   GEM_UNLOCKED: 'gem-unlocked',
   GAME_OVER: 'game-over',
+  LIGHTNING_CHAIN: 'lightning-chain',
 } as const;

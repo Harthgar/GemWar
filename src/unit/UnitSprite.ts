@@ -3,7 +3,7 @@ import { Unit } from './Unit';
 import { CELL_SIZE, UNIT_TEXTURE_KEYS } from '../game/constants';
 import { COLOR_MAP } from '../board/GemSprite';
 
-const UNIT_DISPLAY_SCALE = 3; // 16x20 frames → 48x60 display
+const UNIT_DISPLAY_SCALE = 1.25; // 48x60 frames, 25% larger
 
 export class UnitSprite {
   private scene: Phaser.Scene;
@@ -56,7 +56,7 @@ export class UnitSprite {
     }
 
     // HP text below the unit
-    this.hpText = scene.add.text(unit.worldX, unit.worldY + 32, `${unit.hp}`, {
+    this.hpText = scene.add.text(unit.worldX + 12, unit.worldY + 38, `${unit.hp}`, {
       fontSize: '14px',
       color: '#ffff88',
       fontFamily: 'monospace',
@@ -66,10 +66,22 @@ export class UnitSprite {
     this.hpText.setOrigin(0.5, 0.5);
   }
 
-  update(worldY: number, hp: number): void {
-    this.body.setPosition(this.body.x, worldY);
-    this.hpText.setPosition(this.hpText.x, worldY + 32);
+  update(worldY: number, hp: number, unit?: Unit): void {
+    const x = unit ? unit.worldX : this.body.x;
+    this.body.setPosition(x, worldY);
+    this.hpText.setPosition(x + 12, worldY + 38);
     this.hpText.setText(`${Math.ceil(hp)}`);
+
+    // Status effect tints
+    if (unit && this.body instanceof Phaser.GameObjects.Sprite) {
+      if (unit.slowDuration > 0) {
+        this.body.setTint(0x88aaff); // blue tint for frozen
+      } else if (unit.poisonTimeRemaining > 0) {
+        this.body.setTint(0x44cc44); // green tint for poisoned
+      } else {
+        this.body.clearTint();
+      }
+    }
   }
 
   destroy(): void {

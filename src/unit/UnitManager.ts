@@ -81,6 +81,11 @@ export class UnitManager {
       unit.combatTargetId = null;
     }
 
+    // 0b. Tick status effects (poison, slow)
+    for (const { unit } of this.active) {
+      unit.updateStatusEffects(delta);
+    }
+
     // 1. Resolve unit-vs-unit combat (range-aware, fires projectiles or melee)
     this.resolveUnitCombat();
 
@@ -123,7 +128,7 @@ export class UnitManager {
 
     // If in combat, halt movement
     if (unit.inCombat) {
-      sprite.update(unit.worldY, unit.hp);
+      sprite.update(unit.worldY, unit.hp, unit);
       return;
     }
 
@@ -152,7 +157,7 @@ export class UnitManager {
       }
     }
 
-    sprite.update(unit.worldY, unit.hp);
+    sprite.update(unit.worldY, unit.hp, unit);
   }
 
   private updateAttackingWall(unit: Unit, sprite: UnitSprite): void {
@@ -166,7 +171,7 @@ export class UnitManager {
 
     // If in combat with a unit, fight the unit instead of the wall
     if (unit.inCombat) {
-      sprite.update(unit.worldY, unit.hp);
+      sprite.update(unit.worldY, unit.hp, unit);
       return;
     }
 
@@ -182,7 +187,7 @@ export class UnitManager {
       unit.attackCooldown = UNIT_ATTACK_INTERVAL;
     }
 
-    sprite.update(unit.worldY, unit.hp);
+    sprite.update(unit.worldY, unit.hp, unit);
   }
 
   private updateAttackingBoard(unit: Unit, sprite: UnitSprite): void {
@@ -190,7 +195,7 @@ export class UnitManager {
 
     // If in combat with a unit, fight the unit instead of the board
     if (unit.inCombat) {
-      sprite.update(unit.worldY, unit.hp);
+      sprite.update(unit.worldY, unit.hp, unit);
       return;
     }
 
@@ -225,7 +230,7 @@ export class UnitManager {
       unit.attackCooldown = UNIT_ATTACK_INTERVAL;
     }
 
-    sprite.update(unit.worldY, unit.hp);
+    sprite.update(unit.worldY, unit.hp, unit);
   }
 
   /**

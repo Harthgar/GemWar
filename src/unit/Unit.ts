@@ -1,5 +1,5 @@
 import {
-  BOARD_X, CELL_SIZE,
+  BOARD_X, BOARD_COLS, CELL_SIZE,
   PLAYER_BOARD_Y, ENEMY_BOARD_Y, BOARD_PIXEL_HEIGHT,
   UNIT_SPEED, UNIT_STRENGTH, UNIT_HP_MULTIPLIER, UnitType,
 } from '../game/constants';
@@ -11,10 +11,10 @@ export type UnitState = 'marching' | 'attacking_wall' | 'attacking_board';
 export class Unit {
   readonly id: number;
   readonly owner: 'player' | 'enemy';
-  readonly column: number;
+  column: number;
   readonly unitType: UnitType;
   readonly color: number;
-  readonly worldX: number;
+  worldX: number;
   readonly targetY: number;
   readonly speed: number; // world px per ms (negative = up, positive = down)
   readonly strength: number; // damage per attack (readonly)
@@ -24,6 +24,14 @@ export class Unit {
   attackCooldown = 0; // ms until next attack
   inCombat = false; // set each frame by resolveUnitCombat
   combatTargetId: number | null = null; // id of current combat target
+
+  // Status effects
+  slowFactor = 1.0;          // 1.0 = normal, lower = slower
+  slowDuration = 0;          // ms remaining
+  poisonDmgPerTick = 0;
+  poisonTickInterval = 0;
+  poisonTimeRemaining = 0;
+  poisonTickCooldown = 0;
 
   constructor(
     owner: 'player' | 'enemy',
@@ -54,7 +62,8 @@ export class Unit {
 
   /** Advance position. Returns true if the unit has reached its target edge. */
   update(delta: number): boolean {
-    this.worldY += this.speed * delta;
+    const effectiveSpeed = this.speed * this.slowFactor;
+    this.worldY += effectiveSpeed * delta;
 
     if (this.owner === 'player') {
       return this.worldY <= this.targetY;
@@ -65,5 +74,54 @@ export class Unit {
 
   get isDead(): boolean {
     return this.hp <= 0;
+  }
+
+  applySlow(factor: number, duration: number): void {
+    if (factor < this.slowFactor || duration > this.slowDuration) {
+      this.slowFactor = factor;
+      this.slowDuration = duration;
+    }
+  }
+
+  applyPoison(dmgPerTick: number, tickInterval: number, totalDuration: number): void {
+    this.poisonDmgPerTick = dmgPerTick;
+    this.poisonTickInterval = tickInterval;
+    this.poisonTimeRemaining = totalDuration;
+    this.poisonTickCooldown = tickInterval;
+  }
+
+  /** Shift unit 1 column sideways. Clamped to board bounds. */
+  displace(direction: number): void {
+    const newCol = Math.max(0, Math.min(BOARD_COLS - 1, this.column + direction));
+    if (newCol !== this.column) {
+      this.column = newCol;
+      this.worldX = BOARD_X + this.column * CELL_SIZE + CELL_SIZE / 2;
+    }
+  }
+
+  /** Tick status effects each frame. */
+  updateStatusEffects(delta: number): void {
+    // Slow decay
+    if (this.slowDuration > 0) {
+      this.slowDuration -= delta;
+      if (this.slowDuration <= 0) {
+        this.slowFactor = 1.0;
+        this.slowDuration = 0;
+      }
+    }
+
+    // Poison ticks
+    if (this.poisonTimeRemaining > 0) {
+      this.poisonTimeRemaining -= delta;
+      this.poisonTickCooldown -= delta;
+      if (this.poisonTickCooldown <= 0) {
+        this.hp -= this.poisonDmgPerTick;
+        this.poisonTickCooldown += this.poisonTickInterval;
+      }
+      if (this.poisonTimeRemaining <= 0) {
+        this.poisonDmgPerTick = 0;
+        this.poisonTimeRemaining = 0;
+      }
+    }
   }
 }
