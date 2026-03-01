@@ -66,8 +66,8 @@ export const BATTLEFIELD_Y = BOARD_PIXEL_HEIGHT;                           // 51
 export const PLAYER_BOARD_Y = BATTLEFIELD_Y + BATTLEFIELD_PIXEL_HEIGHT;    // 5632
 export const WORLD_HEIGHT = PLAYER_BOARD_Y + BOARD_PIXEL_HEIGHT;           // 6144
 
-// Game dimensions — dynamic height to fill the screen (no black bars)
-export const GAME_WIDTH = 700;
+// Game dimensions — tight layout to maximize board size on mobile
+export const GAME_WIDTH = 640;
 const BASE_HEIGHT = 1136;
 
 function computeGameHeight(): number {
@@ -79,7 +79,7 @@ function computeGameHeight(): number {
 export const GAME_HEIGHT = computeGameHeight();
 
 // Minimap: full height on the right side
-export const MINIMAP_WIDTH = 120;
+export const MINIMAP_WIDTH = 100;
 export const MINIMAP_PADDING = 8;
 export const MINIMAP_X = GAME_WIDTH - MINIMAP_WIDTH;
 export const MINIMAP_Y = MINIMAP_PADDING;

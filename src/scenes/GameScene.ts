@@ -14,7 +14,6 @@ import { GridPos, areAdjacent } from '../util/GridPosition';
 import { UnitManager } from '../unit/UnitManager';
 import {
   BOARD_X, BOARD_COLS, CELL_SIZE,
-  BOARD_PIXEL_HEIGHT,
   ENEMY_BOARD_Y, PLAYER_BOARD_Y, BATTLEFIELD_Y,
   ENEMY_MOVE_INTERVAL_MIN, ENEMY_MOVE_INTERVAL_MAX,
   MINIMAP_X, MINIMAP_Y, MINIMAP_WIDTH, MINIMAP_HEIGHT,
@@ -216,7 +215,7 @@ export class GameScene extends Phaser.Scene {
       didSwipe = false;
     });
 
-    // Shuffle button (world space, left of player board)
+    // Shuffle button (world space, centered above player board)
     this.createShuffleButton();
 
     // Keyboard: Space to snap back to board view
@@ -345,14 +344,14 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createShuffleButton(): void {
-    const x = BOARD_X - 90;
-    const y = PLAYER_BOARD_Y + BOARD_PIXEL_HEIGHT / 2;
+    const x = BOARD_X + (BOARD_COLS * CELL_SIZE) / 2;
+    const y = PLAYER_BOARD_Y - WALL_HEIGHT - 30;
 
-    const bg = this.add.rectangle(0, 0, 160, 120, 0x335577);
-    bg.setStrokeStyle(3, 0x6699bb);
+    const bg = this.add.rectangle(0, 0, 200, 48, 0x335577);
+    bg.setStrokeStyle(2, 0x6699bb);
 
     const label = this.add.text(0, 0, 'SHUFFLE', {
-      fontSize: '24px',
+      fontSize: '20px',
       color: '#ffffff',
       fontFamily: 'monospace',
       fontStyle: 'bold',
@@ -360,7 +359,7 @@ export class GameScene extends Phaser.Scene {
     label.setOrigin(0.5, 0.5);
 
     this.shuffleButton = this.add.container(x, y, [bg, label]);
-    this.shuffleButton.setSize(160, 120);
+    this.shuffleButton.setSize(200, 48);
     this.shuffleButton.setInteractive();
     this.shuffleButton.on('pointerdown', () => this.doPlayerShuffle());
     this.shuffleButton.setVisible(false);
